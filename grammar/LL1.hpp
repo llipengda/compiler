@@ -85,6 +85,7 @@ public:
                     // throw exception::grammar_error("Unexpected token: " + cur_input.name);
                     if (first.at(top).count(production::symbol::epsilon)) {
                         stack.pop();
+                        tree_.add(production::production(top.name + " -> " + production::symbol::epsilon_str));
                     } else if (!follow.at(top).count(cur_input)) {
                         pos++;
                     } else {
@@ -96,7 +97,7 @@ public:
                 stack.pop();
                 const auto& prod = table.at(cur_input);
                 // output.push_back(prod);
-                tree.add(prod);
+                tree_.add(prod);
                 const auto& symbols = prod.rhs;
 
                 if (symbols.size() == 1 && symbols[0].is_epsilon()) {
@@ -218,7 +219,7 @@ public:
     }
 
     void print_tree() const {
-        tree.print();
+        tree_.print();
     }
 
 private:
@@ -229,7 +230,7 @@ private:
     std::unordered_map<production::symbol, std::vector<std::size_t>> symbol_map;
     table_t parsing_table;
 
-    tree tree;
+    tree tree_;
 
     void build() {
         calc_first();

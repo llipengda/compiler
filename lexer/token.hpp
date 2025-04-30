@@ -1,6 +1,6 @@
 #pragma once
-#ifndef LEXER_KEY_WORDS_HPP
-#define LEXER_KEY_WORDS_HPP
+#ifndef LEXER_TOKEN_HPP
+#define LEXER_TOKEN_HPP
 
 #include <string>
 
@@ -107,4 +107,4 @@ struct token {
 };
 } // namespace lexer::token
 
-#endif // LEXER_KEY_WORDS_HPP
+#endif // LEXER_TOKEN_HPP
