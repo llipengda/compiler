@@ -1,5 +1,6 @@
 #include "grammar/LL1.hpp"
 #include "grammar/production.hpp"
+#include "lexer/token.hpp"
 #include <iostream>
 #include <string>
 #include <unordered_set>
@@ -24,13 +25,33 @@ multexprprime ->  * simpleexpr multexprprime  |  / simpleexpr multexprprime  |  
 simpleexpr ->  ID  |  NUM  |  ( arithexpr )
 )";
 
-std::vector<grammar::production::symbol> simple_lexer(const std::string& str) {
-    std::vector<grammar::production::symbol> tokens;
+std::vector<lexer::token::token> simple_lexer(const std::string& str) {
+    std::vector<lexer::token::token> tokens;
 
-    std::istringstream iss(str);
-    std::string token;
-    while (iss >> token) {
-        tokens.push_back(grammar::production::symbol(token));
+    std::size_t line = 1;
+    std::size_t column = 1;
+    std::size_t i = 0;
+    while (i < str.size()) {
+        if (std::isspace(str[i])) {
+            if (str[i] == '\n') {
+                ++line;
+                column = 1;
+            } else {
+                ++column;
+            }
+            ++i;
+            continue;
+        }
+
+        std::size_t start_col = column;
+        std::size_t start = i;
+        while (i < str.size() && !std::isspace(str[i])) {
+            ++i;
+            ++column;
+        }
+
+        std::string lexeme = str.substr(start, i - start);
+        tokens.push_back(lexer::token::token{(lexer::token::token_type)0, lexeme, line, start_col});
     }
 
     return tokens;
@@ -50,4 +71,5 @@ int main() {
 
     grammar::LL1 ll1(gram);
     ll1.parse(simple_lexer(str));
+    ll1.print_tree();
 }

@@ -1,9 +1,9 @@
 #pragma once
-#include <functional>
 #ifndef GRAMMAR_PRODUCTION_HPP
 #define GRAMMAR_PRODUCTION_HPP
 
 #include <cctype>
+#include <functional>
 #include <ostream>
 #include <stdexcept>
 #include <string>
@@ -72,13 +72,11 @@ struct symbol {
 
     static void set_epsilon_str(const std::string& str) {
         epsilon_str = str;
-
         epsilon = symbol(epsilon_str);
     }
 
     static void set_end_mark_str(const std::string& str) {
         end_mark_str = str;
-
         end_mark = symbol(end_mark_str);
     }
 

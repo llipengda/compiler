@@ -1,97 +1,9 @@
-#pragma once
-#ifndef LEXER_KEY_WORDS_HPP
-#define LEXER_KEY_WORDS_HPP
-
 #include "../regex/regex.hpp"
+#include "token.hpp"
 #include <utility>
-#include <vector>
 
-namespace lexer::token {
-enum token_type {
-    AUTO = 1,
-    BREAK,
-    CASE,
-    CHAR,
-    CONST,
-    CONTINUE,
-    DEFAULT,
-    DO,
-    DOUBLE,
-    ELSE,
-    ENUM,
-    EXTERN,
-    FLOAT,
-    FOR,
-    GOTO,
-    IF,
-    INT,
-    LONG,
-    REGISTER,
-    RETURN,
-    SHORT,
-    SIGNED,
-    SIZEOF,
-    STATIC,
-    STRUCT,
-    SWITCH,
-    TYPEDEF,
-    UNION,
-    UNSIGNED,
-    VOID,
-    VOLATILE,
-    WHILE,
-    MINUS,
-    MINUS_MINUS,
-    MINUS_EQUAL,
-    ARROW,
-    BANG,
-    BANG_EQUAL,
-    PERCENT,
-    PERCENT_EQUAL,
-    AMPERSAND,
-    AMPERSAND_AMPERSAND,
-    AMPERSAND_EQUAL,
-    LPAREN,
-    RPAREN,
-    ASTERISK,
-    ASTERISK_EQUAL,
-    COMMA,
-    DOT,
-    SLASH,
-    SLASH_EQUAL,
-    COLON,
-    SEMICOLON,
-    QUESTION,
-    LBRACKET,
-    RBRACKET,
-    CARET,
-    CARET_EQUAL,
-    LBRACE,
-    PIPE,
-    PIPE_PIPE,
-    PIPE_EQUAL,
-    RBRACE,
-    TILDE,
-    PLUS,
-    PLUS_PLUS,
-    PLUS_EQUAL,
-    LESS,
-    LESS_LESS,
-    LESS_LESS_EQUAL,
-    LESS_EQUAL,
-    EQUAL,
-    EQUAL_EQUAL,
-    GREATER,
-    GREATER_EQUAL,
-    GREATER_GREATER,
-    GREATER_GREATER_EQUAL,
-    QUOTE,
-    COMMENT,
-    NUMBER,
-    IDENTIFIER,
-    WHITESPACE
-};
-
+namespace lexer {
+using namespace lexer::token;
 using key_word_t = std::pair<regex::regex, token_type>;
 
 static const std::vector<key_word_t> key_words = {
@@ -177,6 +89,4 @@ static const std::vector<key_word_t> key_words = {
     {regex::regex("[0-9]+"), NUMBER},
     {regex::regex("[a-zA-Z_%][a-zA-Z0-9_]*"), IDENTIFIER},
     {regex::regex("[ \t\r\n]+"), WHITESPACE}};
-} // namespace lexer::token
-
-#endif // LEXER_KEY_WORDS_HPP
+} // namespace lexer

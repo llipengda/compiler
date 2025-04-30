@@ -2,8 +2,10 @@
 #ifndef GRAMMAR_LL1_HPP
 #define GRAMMAR_LL1_HPP
 
+#include "../lexer/token.hpp"
 #include "exception.hpp"
 #include "production.hpp"
+#include "tree.hpp"
 #include <algorithm>
 #include <cstddef>
 #include <iomanip>
@@ -16,7 +18,7 @@
 
 namespace grammar {
 class grammar {
-    virtual void parse(const std::vector<production::symbol>&) const = 0;
+    virtual void parse(const std::vector<lexer::token::token>&) = 0;
 };
 
 class LL1 : public grammar {
@@ -48,11 +50,11 @@ public:
     LL1(LL1&&) = default;
     LL1& operator=(LL1&&) = default;
 
-    void parse(const std::vector<production::symbol>& input) const override {
-        std::vector<production::production> output;
+    void parse(const std::vector<lexer::token::token>& input) override {
+        // std::vector<production::production> output;
 
-        std::vector<production::symbol> in = input;
-        in.push_back(production::symbol::end_mark);
+        auto in = input;
+        in.emplace_back(production::symbol::end_mark_str);
 
         std::stack<production::symbol> stack;
         stack.push(production::symbol::end_mark);
@@ -61,8 +63,12 @@ public:
         std::size_t pos = 0;
 
         while (pos < in.size() || !stack.empty()) {
-            auto& cur_input = in[pos];
+            auto cur_input = production::symbol{in[pos]};
             auto& top = stack.top();
+
+            auto get_pos = [&]() {
+                return "at line " + std::to_string(in[pos].line) + ", column " + std::to_string(in[pos].column);
+            };
 
             if (top.is_terminal() || top.is_end_mark()) {
                 if (top == cur_input) {
@@ -70,7 +76,7 @@ public:
                     stack.pop();
                 } else {
                     stack.pop();
-                    std::cerr << "Expect: " << top.name << " but got: " << cur_input.name << '\n';
+                    std::cerr << "Expect: " << top.name << " but got: " << cur_input.name << ' ' << get_pos() << '\n';
                     // throw exception::grammar_error("Unexpected token: expected " + top.name + " instead of " + cur_input.name);
                 }
             } else {
@@ -82,14 +88,15 @@ public:
                     } else if (!follow.at(top).count(cur_input)) {
                         pos++;
                     } else {
-                        throw exception::grammar_error("Unexpected token: " + cur_input.name);
+                        throw exception::grammar_error("Unexpected token: " + cur_input.name + ' ' + get_pos());
                     }
-                    std::cerr << "Unexpected token: " << cur_input.name << '\n';
+                    std::cerr << "Unexpected token: " << cur_input.name << ' ' << get_pos() << '\n';
                     continue;
                 }
                 stack.pop();
                 const auto& prod = table.at(cur_input);
-                output.push_back(prod);
+                // output.push_back(prod);
+                tree.add(prod);
                 const auto& symbols = prod.rhs;
 
                 if (symbols.size() == 1 && symbols[0].is_epsilon()) {
@@ -102,9 +109,9 @@ public:
             }
         }
 
-        for (const auto& prod : output) {
-            std::cout << prod << '\n';
-        }
+        // for (const auto& prod : output) {
+        //     std::cout << prod << '\n';
+        // }
     }
 
     void print_first() const {
@@ -210,6 +217,10 @@ public:
         }
     }
 
+    void print_tree() const {
+        tree.print();
+    }
+
 private:
     std::vector<production::production> productions;
     std::unordered_map<production::symbol, symbol_set> first;
@@ -217,6 +228,8 @@ private:
 
     std::unordered_map<production::symbol, std::vector<std::size_t>> symbol_map;
     table_t parsing_table;
+
+    tree tree;
 
     void build() {
         calc_first();
