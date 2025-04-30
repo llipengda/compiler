@@ -1,18 +1,53 @@
-// #define SHOW_DEBUG
-#include "lexer/lexer.hpp"
+#include "grammar/LL1.hpp"
+#include "grammar/production.hpp"
+#include <iostream>
+#include <string>
+#include <unordered_set>
+
+const std::unordered_set<std::string> terminals = {
+    "{", "}", "(", ")", "if", "then", "else", "while", "=", ";", "<", ">", "<=", ">=", "==", "+", "-", "*", "/", "ID", "NUM"};
+
+const std::string gram = R"(
+program -> compoundstmt
+stmt ->  ifstmt  |  whilestmt  |  assgstmt  |  compoundstmt
+compoundstmt ->  { stmts }
+stmts ->  stmt stmts   |   E
+ifstmt ->  if ( boolexpr ) then stmt else stmt
+whilestmt ->  while ( boolexpr ) stmt
+assgstmt ->  ID = arithexpr ;
+boolexpr  ->  arithexpr boolop arithexpr
+boolop ->   <  |  >  |  <=  |  >=  | ==
+arithexpr  ->  multexpr arithexprprime
+arithexprprime ->  + multexpr arithexprprime  |  - multexpr arithexprprime  |   E
+multexpr ->  simpleexpr  multexprprime
+multexprprime ->  * simpleexpr multexprprime  |  / simpleexpr multexprprime  |   E
+simpleexpr ->  ID  |  NUM  |  ( arithexpr )
+)";
+
+std::vector<grammar::production::symbol> simple_lexer(const std::string& str) {
+    std::vector<grammar::production::symbol> tokens;
+
+    std::istringstream iss(str);
+    std::string token;
+    while (iss >> token) {
+        tokens.push_back(grammar::production::symbol(token));
+    }
+
+    return tokens;
+}
 
 int main() {
-    auto lex = lexer::lexer();
-    std::string input;
+    grammar::production::symbol::set_epsilon_str("E");
+    grammar::production::symbol::set_terminal_rule([&](const std::string& str) {
+        return terminals.count(str);
+    });
 
-    std::string tmp;
-    while (std::getline(std::cin, tmp)) {
-        input += tmp + '\n';
+    std::string str;
+    std::string line;
+    while (std::getline(std::cin, line)) {
+        str += line + '\n';
     }
 
-    auto res = lex.parse(input);
-
-    for (int i = 0; i < res.size(); ++i) {
-        std::cout << i + 1 << ": <" << res[i].first << ',' << res[i].second << ">\n";
-    }
+    grammar::LL1 ll1(gram);
+    ll1.parse(simple_lexer(str));
 }
