@@ -1,5 +1,4 @@
 #pragma once
-#include <functional>
 #ifndef GRAMMAR_SLR_HPP
 #define GRAMMAR_SLR_HPP
 
@@ -9,6 +8,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+
 
 namespace grammar {
 struct action {
@@ -202,9 +203,8 @@ public:
                 std::cout << sym << " ";
             }
             if (std::next(it) != steps.rend()) {
-                std::cout << "=>";
+                std::cout << "=> \n";
             }
-            std::cout << '\n';
         }
     }
 
