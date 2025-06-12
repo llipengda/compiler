@@ -4,18 +4,27 @@
 
 #include "../lexer/token.hpp"
 #include "production.hpp"
+#include "tree.hpp"
+#include <stack>
 #include <unordered_set>
 
 namespace grammar {
 class grammar_base {
 public:
     using symbol_set = std::unordered_set<production::symbol>;
-    virtual void parse(const std::vector<lexer::token::token>&) = 0;
+    virtual void parse(const std::vector<lexer::token>&) = 0;
+    virtual ~grammar_base() = default;
+
+    virtual void print_tree() const {
+        tree_.print();
+    }
+
 protected:
     std::vector<production::production> productions;
     std::unordered_map<production::symbol, symbol_set> first;
     std::unordered_map<production::symbol, symbol_set> follow;
     std::unordered_map<production::symbol, std::vector<std::size_t>> symbol_map;
+    tree tree_;
 
     void calc_first() {
         for (const auto& prod : productions) {
@@ -23,7 +32,7 @@ protected:
         }
     }
 
-    symbol_set& calc_first(production::symbol sym) {
+    symbol_set& calc_first(const production::symbol& sym) {
         if (first.count(sym)) {
             return first[sym];
         }
@@ -128,6 +137,21 @@ protected:
             }
         }
         return result;
+    }
+
+    template <typename T>
+    static void print_stack(const std::stack<T> stack) {
+        std::vector<T> elements(stack.size());
+        auto copy = stack;
+        auto n = elements.size();
+        for (std::size_t i = 0; i < n; ++i) {
+            elements[n - i - 1] = copy.top();
+            copy.pop();
+        }
+        for (const auto& elem : elements) {
+            std::cout << elem << " ";
+        }
+        std::cout << std::endl;
     }
 };
 } // namespace grammar

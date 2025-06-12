@@ -13,13 +13,14 @@
 #include <stack>
 #include <unordered_map>
 #include <vector>
+#include <algorithm>
 
 namespace grammar {
-class LL1 : public grammar_base {
+class LL1 final : public grammar_base {
 public:
     using table_t = std::unordered_map<production::symbol, std::unordered_map<production::symbol, production::production>>;
 
-    LL1(const std::vector<production::production>& productions) {
+    explicit LL1(const std::vector<production::production>& productions) {
         this->productions = productions;
 
         for (std::size_t i = 0; i < productions.size(); ++i) {
@@ -30,7 +31,7 @@ public:
         build();
     }
 
-    LL1(const std::string& str) {
+    explicit LL1(const std::string& str) {
         productions = production::production::parse(str);
         for (std::size_t i = 0; i < productions.size(); ++i) {
             const auto& prod = productions[i];
@@ -45,7 +46,7 @@ public:
     LL1(LL1&&) = default;
     LL1& operator=(LL1&&) = default;
 
-    void parse(const std::vector<lexer::token::token>& input) override {
+    void parse(const std::vector<lexer::token>& input) override {
         // std::vector<production::production> output;
 
         auto in = input;
@@ -58,7 +59,7 @@ public:
         std::size_t pos = 0;
 
         while (pos < in.size() || !stack.empty()) {
-            auto cur_input = production::symbol{in[pos]};
+            auto cur_input = production::symbol{std::string(in[pos])};
             auto& top = stack.top();
 
             auto get_pos = [&]() {
@@ -99,7 +100,7 @@ public:
                     continue;
                 }
 
-                for (auto it = symbols.rbegin(); it != symbols.rend(); it++) {
+                for (auto it = symbols.rbegin(); it != symbols.rend(); ++it) {
                     stack.push(*it);
                 }
             }
@@ -213,14 +214,8 @@ public:
         }
     }
 
-    void print_tree() const {
-        tree_.print();
-    }
-
 private:
     table_t parsing_table;
-
-    tree tree_;
 
     void build() {
         calc_first();

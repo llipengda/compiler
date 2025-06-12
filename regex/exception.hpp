@@ -1,13 +1,14 @@
 #pragma once
 #ifndef REGEX_EXCEPTION_HPP
+#define REGEX_EXCEPTION_HPP
 
 #include <exception>
 #include <string>
 
 namespace regex {
-class unknown_character_exception : public std::exception {
+class unknown_character_exception final : public std::exception {
 public:
-    explicit unknown_character_exception(std::string ch)
+    explicit unknown_character_exception(const std::string& ch)
         : character(ch), message("Unknown character: ") {
         message += character;
     }
@@ -21,7 +22,7 @@ private:
     std::string message;
 };
 
-class invalid_regex_exception : public std::exception {
+class invalid_regex_exception final : public std::exception {
 public:
     explicit invalid_regex_exception(const std::string& mes)
         : message("Invalid regex: ") {

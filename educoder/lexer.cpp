@@ -24,7 +24,7 @@ void read_prog(string& prog)
 namespace regex {
 class unknown_character_exception : public std::exception {
 public:
-    explicit unknown_character_exception(std::string ch)
+    explicit unknown_character_exception(const std::string &ch)
         : character(ch), message("Unknown character: ") {
         message += character;
     }
@@ -90,7 +90,7 @@ enum class op {
     plus,
     left_par,
     right_par,
-    blackslash
+    backslash
 };
 
 const std::unordered_map<symbol, std::string> symbol_map = {
@@ -103,7 +103,7 @@ const std::unordered_map<op, std::string> op_map = {
     {op::plus, "+"},
     {op::left_par, "("},
     {op::right_par, ")"},
-    {op::blackslash, "\\"}};
+    {op::backslash, "\\"}};
 
 enum class nothing {};
 
@@ -432,7 +432,7 @@ static int get_precedence(op opr) {
     case op::alt: return 1;
     case op::left_par: return 0;
     case op::right_par: return 0;
-    case op::blackslash: return -1;
+    case op::backslash: return -1;
     }
     return -1;
 }
@@ -531,7 +531,7 @@ static std::vector<token_type> split(const std::string& s) {
             continue;
         }
 
-        if (is(last, op::blackslash)) {
+        if (is(last, op::backslash)) {
             if (!is_nonop(ch)) {
                 last = ch;
             } else if (ch == 'w') {
@@ -561,7 +561,7 @@ static std::vector<token_type> split(const std::string& s) {
             if (is_nonop(ch)) {
                 last = ch;
             } else if (ch == '\\') {
-                last = op::blackslash;
+                last = op::backslash;
                 continue;
             } else if (ch == '|') {
                 last = op::alt;
@@ -808,7 +808,7 @@ public:
 class concat_node : public regex_node {
 public:
     node_ptr_t left, right;
-    explicit concat_node(node_ptr_t left, node_ptr_t right) : left(left), right(right) {
+    explicit concat_node(const node_ptr_t &left, const node_ptr_t &right) : left(left), right(right) {
         type = type::concat;
         nullable = left->nullable && right->nullable;
         firstpos = left->firstpos;
@@ -825,7 +825,7 @@ public:
 class star_node : public regex_node {
 public:
     node_ptr_t child;
-    explicit star_node(node_ptr_t child) : child(child) {
+    explicit star_node(const node_ptr_t &child) : child(child) {
         type = type::star;
         nullable = true;
         firstpos = child->firstpos;
@@ -836,7 +836,7 @@ public:
 class plus_node : public regex_node {
 public:
     node_ptr_t child;
-    explicit plus_node(node_ptr_t child) : child(child) {
+    explicit plus_node(const node_ptr_t &child) : child(child) {
         type = type::plus;
         nullable = child->nullable;
         firstpos = child->firstpos;
@@ -847,7 +847,7 @@ public:
 class alt_node : public regex_node {
 public:
     node_ptr_t left, right;
-    explicit alt_node(node_ptr_t left, node_ptr_t right) : left(left), right(right) {
+    explicit alt_node(const node_ptr_t &left, const node_ptr_t &right) : left(left), right(right) {
         type = type::alt;
         nullable = left->nullable || right->nullable;
         firstpos = left->firstpos;
@@ -965,7 +965,7 @@ public:
     }
 
 private:
-    void visit(regex_node::node_ptr_t node, std::function<void(regex_node&)> func) {
+    void visit(const regex_node::node_ptr_t &node, const std::function<void(regex_node&)> &func) {
         if (node == nullptr) {
             return;
         }
@@ -989,7 +989,7 @@ private:
         }
     }
 
-    void print(regex_node::node_ptr_t node, int indent = 0) const {
+    void print(const regex_node::node_ptr_t &node, int indent = 0) const {
         using token::op;
 
         if (node == nullptr) {

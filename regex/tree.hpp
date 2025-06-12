@@ -43,12 +43,12 @@ public:
     }
 };
 
-class char_node : public regex_node {
+class char_node final : public regex_node {
 public:
     token::token_type value;
-    size_t number;
+    std::size_t number;
 
-    explicit char_node(token::token_type ch, size_t number) : value(ch), number(number) {
+    explicit char_node(const token::token_type& ch, const std::size_t number) : value(ch), number(number) {
         type = type::ch;
         nullable = false;
         firstpos.insert(number);
@@ -56,10 +56,10 @@ public:
     }
 };
 
-class concat_node : public regex_node {
+class concat_node final : public regex_node {
 public:
     node_ptr_t left, right;
-    explicit concat_node(node_ptr_t left, node_ptr_t right) : left(left), right(right) {
+    explicit concat_node(const node_ptr_t& left, const node_ptr_t& right) : left(left), right(right) {
         type = type::concat;
         nullable = left->nullable && right->nullable;
         firstpos = left->firstpos;
@@ -73,10 +73,10 @@ public:
     }
 };
 
-class star_node : public regex_node {
+class star_node final : public regex_node {
 public:
     node_ptr_t child;
-    explicit star_node(node_ptr_t child) : child(child) {
+    explicit star_node(const node_ptr_t& child) : child(child) {
         type = type::star;
         nullable = true;
         firstpos = child->firstpos;
@@ -84,10 +84,10 @@ public:
     }
 };
 
-class plus_node : public regex_node {
+class plus_node final : public regex_node {
 public:
     node_ptr_t child;
-    explicit plus_node(node_ptr_t child) : child(child) {
+    explicit plus_node(const node_ptr_t& child) : child(child) {
         type = type::plus;
         nullable = child->nullable;
         firstpos = child->firstpos;
@@ -95,10 +95,10 @@ public:
     }
 };
 
-class alt_node : public regex_node {
+class alt_node final : public regex_node {
 public:
     node_ptr_t left, right;
-    explicit alt_node(node_ptr_t left, node_ptr_t right) : left(left), right(right) {
+    explicit alt_node(const node_ptr_t& left, const node_ptr_t& right) : left(left), right(right) {
         type = type::alt;
         nullable = left->nullable || right->nullable;
         firstpos = left->firstpos;
@@ -123,11 +123,11 @@ public:
     explicit regex_tree(const std::string& s) {
         auto ss = token::split(s);
 #ifdef SHOW_DEBUG
-        ::regex::token::print(ss);
+        ::regex::print(ss);
 #endif
         auto postfix = to_postfix(ss);
 #ifdef SHOW_DEBUG
-        ::regex::token::print(postfix);
+        ::regex::print(postfix);
 #endif
 
         std::stack<regex_node::node_ptr_t> st;
@@ -187,18 +187,18 @@ public:
         visit([&](regex_node& node) {
             if (node.type == regex_node::type::concat) {
                 auto& concat_node = node.as<tree::concat_node>();
-                for (auto i : concat_node.left->lastpos) {
-                    followpos[i].insert(concat_node.right->firstpos.begin(), concat_node.right->firstpos.end());
+                for (auto idx : concat_node.left->lastpos) {
+                    followpos[idx].insert(concat_node.right->firstpos.begin(), concat_node.right->firstpos.end());
                 }
             } else if (node.type == regex_node::type::star) {
                 auto& star_node = node.as<tree::star_node>();
-                for (auto i : star_node.lastpos) {
-                    followpos[i].insert(star_node.firstpos.begin(), star_node.firstpos.end());
+                for (auto idx : star_node.lastpos) {
+                    followpos[idx].insert(star_node.firstpos.begin(), star_node.firstpos.end());
                 }
             } else if (node.type == regex_node::type::plus) {
                 auto& plus_node = node.as<tree::plus_node>();
-                for (auto i : plus_node.lastpos) {
-                    followpos[i].insert(plus_node.firstpos.begin(), plus_node.firstpos.end());
+                for (auto idx : plus_node.lastpos) {
+                    followpos[idx].insert(plus_node.firstpos.begin(), plus_node.firstpos.end());
                 }
             }
         });
@@ -206,7 +206,7 @@ public:
         token_map = disjoint_token_sets(token_map);
     }
 
-    void visit(std::function<void(regex_node&)> func) {
+    void visit(const std::function<void(regex_node&)>& func) const {
         visit(root, func);
     }
 
@@ -216,7 +216,7 @@ public:
     }
 
 private:
-    void visit(regex_node::node_ptr_t node, std::function<void(regex_node&)> func) {
+    static void visit(const regex_node::node_ptr_t& node, const std::function<void(regex_node&)>& func) {
         if (node == nullptr) {
             return;
         }
@@ -240,7 +240,7 @@ private:
         }
     }
 
-    void print(regex_node::node_ptr_t node, int indent = 0) const {
+    static void print(const regex_node::node_ptr_t& node, const int indent = 0) {
         using token::op;
 
         if (node == nullptr) {
@@ -248,36 +248,36 @@ private:
         }
         std::cout << std::string(indent, ' ');
         if (node->type == regex_node::type::ch) {
-            auto& char_node = node->as<tree::char_node>();
+            const auto& char_node = node->as<tree::char_node>();
             std::cout << char_node.value << '(' << char_node.number << ')' << std::endl;
         } else if (node->type == regex_node::type::concat) {
             std::cout << token::op_map.at(op::concat) << std::endl;
-            print(node->as<tree::concat_node>().left, indent + 2);
-            print(node->as<tree::concat_node>().right, indent + 2);
+            print(node->as<concat_node>().left, indent + 2);
+            print(node->as<concat_node>().right, indent + 2);
         } else if (node->type == regex_node::type::alt) {
             std::cout << token::op_map.at(op::alt) << std::endl;
-            print(node->as<tree::alt_node>().left, indent + 2);
-            print(node->as<tree::alt_node>().right, indent + 2);
+            print(node->as<alt_node>().left, indent + 2);
+            print(node->as<alt_node>().right, indent + 2);
         } else if (node->type == regex_node::type::star) {
             std::cout << token::op_map.at(op::star) << std::endl;
-            print(node->as<tree::star_node>().child, indent + 2);
+            print(node->as<star_node>().child, indent + 2);
         } else if (node->type == regex_node::type::plus) {
             std::cout << token::op_map.at(op::plus) << std::endl;
-            print(node->as<tree::plus_node>().child, indent + 2);
+            print(node->as<plus_node>().child, indent + 2);
         }
     }
 
     struct unordered_set_hash {
         std::size_t operator()(const std::unordered_set<std::size_t>& s) const {
             std::size_t h = 0;
-            for (auto v : s) {
+            for (const auto v : s) {
                 h ^= std::hash<std::size_t>{}(v);
             }
             return h;
         }
     };
 
-    token_map_t disjoint_token_sets(const token_map_t& original) {
+    static token_map_t disjoint_token_sets(const token_map_t& original) {
         std::unordered_map<char, std::unordered_set<size_t>> char_to_positions;
 
         for (const auto& [token, positions] : original) {

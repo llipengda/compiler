@@ -3,8 +3,9 @@
 #define LEXER_TOKEN_HPP
 
 #include <string>
+#include <utility>
 
-namespace lexer::token {
+namespace lexer {
 enum token_type {
     AUTO = 1,
     BREAK,
@@ -96,12 +97,12 @@ struct token {
     std::size_t line;
     std::size_t column;
 
-    token(token_type type, const std::string& value, std::size_t line, std::size_t column)
-        : type(type), value(value), line(line), column(column) {}
+    token(const token_type type, std::string value, const std::size_t line, const std::size_t column)
+        : type(type), value(std::move(value)), line(line), column(column) {}
 
-    explicit token(const std::string& value) : type((token_type)0), value(value), line(0), column(0) {}
+    explicit token(std::string value) : type(static_cast<token_type>(0)), value(std::move(value)), line(0), column(0) {}
 
-    operator std::string() const {
+    explicit operator std::string() const {
         return value;
     }
 };

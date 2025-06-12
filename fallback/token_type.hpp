@@ -19,7 +19,7 @@ enum class op {
     plus,
     left_par,
     right_par,
-    blackslash
+    backslash
 };
 
 const std::unordered_map<symbol, std::string> symbol_map = {
@@ -32,7 +32,7 @@ const std::unordered_map<op, std::string> op_map = {
     {op::plus, "+"},
     {op::left_par, "("},
     {op::right_par, ")"},
-    {op::blackslash, "\\"}};
+    {op::backslash, "\\"}};
 
 enum class nothing {};
 
@@ -41,7 +41,7 @@ struct char_set {
     bool is_negative = false;
 
     char_set() = default;
-    explicit char_set(char from, char to, bool is_negative = false) : is_negative(is_negative) {
+    explicit char_set(const char from, const char to, const bool is_negative = false) : is_negative(is_negative) {
         for (char ch = from; ch <= to; ++ch) {
             chars.insert(ch);
         }
@@ -61,7 +61,7 @@ struct char_set {
         }
     }
 
-    void add(char ch) {
+    void add(const char ch) {
         chars.insert(ch);
     }
 
@@ -69,7 +69,7 @@ struct char_set {
         chars.insert(other.chars.begin(), other.chars.end());
     }
 
-    void add(char from, char to) {
+    void add(const char from, const char to) {
         for (char ch = from; ch <= to; ++ch) {
             chars.insert(ch);
         }
@@ -264,17 +264,23 @@ T& get(token_type& t) {
         throw std::bad_cast();
     }
 
-    if (std::is_same<T, nothing>::value) {
-        return (T&)t.value._nothing;
-    } else if (std::is_same<T, symbol>::value) {
-        return (T&)t.value.sym;
-    } else if (std::is_same<T, op>::value) {
-        return (T&)t.value.operation;
-    } else if (std::is_same<T, char_set>::value) {
-        return (T&)t.value.set;
-    } else if (std::is_same<T, char>::value) {
-        return (T&)t.value.character;
+    if (std::is_same_v<T, nothing>) {
+        return static_cast<T&>(t.value._nothing);
     }
+    if (std::is_same_v<T, symbol>) {
+        return static_cast<T&>(t.value.sym);
+    }
+    if (std::is_same_v<T, op>) {
+        return static_cast<T&>(t.value.operation);
+    }
+    if (std::is_same_v<T, char_set>) {
+        return static_cast<T&>(t.value.set);
+    }
+    if (std::is_same_v<T, char>) {
+        return static_cast<T&>(t.value.character);
+    }
+
+    throw std::bad_cast();
 }
 
 template <typename T>
@@ -309,17 +315,23 @@ template <typename T>
 T* get_if(token_type* t) {
     if (!t || !holds_alternative<T>(*t)) return nullptr;
 
-    if (std::is_same<T, nothing>::value) {
-        return (T*)&t->value._nothing;
-    } else if (std::is_same<T, symbol>::value) {
-        return (T*)&t->value.sym;
-    } else if (std::is_same<T, op>::value) {
-        return (T*)&t->value.operation;
-    } else if (std::is_same<T, char_set>::value) {
-        return (T*)&t->value.set;
-    } else if (std::is_same<T, char>::value) {
-        return (T*)&t->value.character;
+    if (std::is_same_v<T, nothing>) {
+        return static_cast<T*>(&t->value._nothing);
     }
+    if (std::is_same_v<T, symbol>) {
+        return static_cast<T*>(&t->value.sym);
+    }
+    if (std::is_same_v<T, op>) {
+        return static_cast<T*>(&t->value.operation);
+    }
+    if (std::is_same_v<T, char_set>) {
+        return static_cast<T*>(&t->value.set);
+    }
+    if (std::is_same_v<T, char>) {
+        return static_cast<T*>(&t->value.character);
+    }
+
+    return nullptr;
 }
 
 template <typename T>

@@ -1,9 +1,11 @@
+#pragma once
+#ifndef LEXER_KEYWORDS_HPP
+#define LEXER_KEYWORDS_HPP
 #include "../regex/regex.hpp"
 #include "token.hpp"
 #include <utility>
 
 namespace lexer {
-using namespace lexer::token;
 using key_word_t = std::pair<regex::regex, token_type>;
 
 static const std::vector<key_word_t> key_words = {
@@ -90,3 +92,5 @@ static const std::vector<key_word_t> key_words = {
     {regex::regex("[a-zA-Z_%][a-zA-Z0-9_]*"), IDENTIFIER},
     {regex::regex("[ \t\r\n]+"), WHITESPACE}};
 } // namespace lexer
+
+#endif // LEXER_KEYWORDS_HPP

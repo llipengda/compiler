@@ -1,4 +1,6 @@
-#include "grammar/LL1.hpp"
+// #define SHOW_DEBUG
+
+#include "grammar/SLR.hpp"
 #include "grammar/production.hpp"
 #include "lexer/token.hpp"
 #include <iostream>
@@ -25,8 +27,10 @@ multexprprime ->  * simpleexpr multexprprime  |  / simpleexpr multexprprime  |  
 simpleexpr ->  ID  |  NUM  |  ( arithexpr )
 )";
 
-std::vector<lexer::token::token> simple_lexer(const std::string& str) {
-    std::vector<lexer::token::token> tokens;
+const std::string epsilon_str = "E";
+
+std::vector<lexer::token> simple_lexer(const std::string& str) {
+    std::vector<lexer::token> tokens;
 
     std::size_t line = 1;
     std::size_t column = 1;
@@ -51,14 +55,14 @@ std::vector<lexer::token::token> simple_lexer(const std::string& str) {
         }
 
         std::string lexeme = str.substr(start, i - start);
-        tokens.push_back(lexer::token::token{(lexer::token::token_type)0, lexeme, line, start_col});
+        tokens.emplace_back(static_cast<lexer::token_type>(0), lexeme, line, start_col);
     }
 
     return tokens;
 }
 
 int main() {
-    grammar::production::symbol::set_epsilon_str("E");
+    grammar::production::symbol::set_epsilon_str(epsilon_str);
     grammar::production::symbol::set_terminal_rule([&](const std::string& str) {
         return terminals.count(str);
     });
@@ -69,7 +73,7 @@ int main() {
         str += line + '\n';
     }
 
-    grammar::LL1 ll1(gram);
-    ll1.parse(simple_lexer(str));
-    ll1.print_tree();
+    grammar::SLR parser(gram);
+    parser.parse(simple_lexer(str));
+    parser.print_steps();
 }

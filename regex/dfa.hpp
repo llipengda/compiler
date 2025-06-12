@@ -13,14 +13,14 @@ namespace regex::dfa {
 class dfa {
 public:
     using state_t = std::size_t;
-    using token_t = regex::token::token_type;
-    using token_t_hash = regex::token::token_type_hash;
+    using token_t = token::token_type;
+    using token_t_hash = token::token_type_hash;
     using transition_t = std::unordered_map<token_t, state_t, token_t_hash>;
     using dfa_state_t = std::unordered_map<state_t, transition_t>;
 
     dfa() = delete;
 
-    explicit dfa(const regex::tree::regex_tree& tree) {
+    explicit dfa(const tree::regex_tree& tree) {
         init(tree);
     }
 
@@ -35,7 +35,7 @@ public:
 #endif
     }
 
-    void add_transition(state_t from, const token_t& token, state_t to) {
+    void add_transition(const state_t from, const token_t& token, const state_t to) {
         transitions[from][token] = to;
     }
 

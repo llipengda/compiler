@@ -7,9 +7,9 @@
 #include <string>
 
 namespace grammar::exception {
-class ambiguous_grammar_exception : public std::exception {
+class ambiguous_grammar_exception final : public std::exception {
 public:
-    ambiguous_grammar_exception(const std::vector<grammar::production::production>& prods) {
+    explicit ambiguous_grammar_exception(const std::vector<grammar::production::production>& prods) {
         for (const auto& prod : prods) {
             msg += prod.to_string() + "\n";
         }
@@ -23,9 +23,9 @@ private:
     std::string msg = "Ambiguous grammar: \n";
 };
 
-class grammar_error : public std::exception {
+class grammar_error final : public std::exception {
 public:
-    grammar_error(const std::string& message) : msg(message) {}
+    explicit grammar_error(const std::string& message) : msg(message) {}
 
     const char* what() const noexcept override {
         return msg.c_str();

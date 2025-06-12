@@ -29,7 +29,7 @@ enum class op {
     plus,
     left_par,
     right_par,
-    blackslash
+    backslash
 };
 
 const std::unordered_map<symbol, std::string> symbol_map = {
@@ -42,7 +42,7 @@ const std::unordered_map<op, std::string> op_map = {
     {op::plus, "+"},
     {op::left_par, "("},
     {op::right_par, ")"},
-    {op::blackslash, "\\"}};
+    {op::backslash, "\\"}};
 
 enum class nothing {};
 
@@ -51,25 +51,26 @@ struct char_set {
     bool is_negative = false;
 
     char_set() = default;
-    explicit char_set(char from, char to, bool is_negative = false) : is_negative(is_negative) {
+
+    explicit char_set(const char from, const char to, const bool is_negative = false) : is_negative(is_negative) {
         for (char ch = from; ch <= to; ++ch) {
             chars.insert(ch);
         }
     }
 
-    explicit char_set(std::initializer_list<char> init, bool is_negative = false) : is_negative(is_negative) {
+    explicit char_set(const std::initializer_list<char> init, bool is_negative = false) : is_negative(is_negative) {
         for (const auto& ch : init) {
             chars.insert(ch);
         }
     }
 
-    explicit char_set(std::initializer_list<std::pair<char, char>> init, bool is_negative = false) : is_negative(is_negative) {
+    explicit char_set(std::initializer_list<std::pair<char, char>> init, const bool is_negative = false) : is_negative(is_negative) {
         for (const auto& [from, to] : init) {
             add(from, to);
         }
     }
 
-    void add(char ch) {
+    void add(const char ch) {
         chars.insert(ch);
     }
 
@@ -77,7 +78,7 @@ struct char_set {
         chars.insert(other.chars.begin(), other.chars.end());
     }
 
-    void add(char from, char to) {
+    void add(const char from, const char to) {
         for (char ch = from; ch <= to; ++ch) {
             chars.insert(ch);
         }
@@ -122,12 +123,12 @@ static int get_precedence(op opr) {
     case op::alt: return 1;
     case op::left_par: return 0;
     case op::right_par: return 0;
-    case op::blackslash: return -1;
+    case op::backslash: return -1;
     }
     return -1;
 }
 
-static int get_precedence(token_type ch) {
+static int get_precedence(const token_type &ch) {
     op opr;
     if (std::holds_alternative<op>(ch)) {
         opr = std::get<op>(ch);
@@ -138,19 +139,19 @@ static int get_precedence(token_type ch) {
     return get_precedence(opr);
 }
 
-static bool is_char(token_type ch) {
+static bool is_char(const token_type &ch) {
     return std::holds_alternative<char>(ch);
 }
 
-static bool is_symbol(token_type ch) {
+static bool is_symbol(const token_type &ch) {
     return std::holds_alternative<symbol>(ch);
 }
 
-static bool is_op(token_type ch) {
+static bool is_op(const token_type &ch) {
     return std::holds_alternative<op>(ch);
 }
 
-static bool is_char_set(token_type ch) {
+static bool is_char_set(const token_type &ch) {
     return std::holds_alternative<char_set>(ch);
 }
 
@@ -162,12 +163,12 @@ static bool is(token_type ch, T other) {
     return false;
 }
 
-static bool match(char c, token_type ch) {
+static bool match(char c, const token_type &ch) {
     if (is_char(ch)) {
         return std::get<char>(ch) == c;
-    } else if (is_char_set(ch)) {
-        const auto& set = std::get<char_set>(ch);
-        if (set.is_negative) {
+    }
+    if (is_char_set(ch)) {
+        if (const auto& set = std::get<char_set>(ch); set.is_negative) {
             return set.chars.find(c) == set.chars.end();
         } else {
             return set.chars.find(c) != set.chars.end();
@@ -176,11 +177,11 @@ static bool match(char c, token_type ch) {
     return false;
 }
 
-static bool is_nonop(char ch) {
+static bool is_nonop(const char ch) {
     return ch != '\\' && ch != '|' && ch != '*' && ch != '(' && ch != ')' && ch != '+' && ch != '[' && ch != ']';
 }
 
-static bool is_nonop(token_type ch) {
+static bool is_nonop(const token_type& ch) {
     return is_char(ch) || is_symbol(ch) || is_char_set(ch);
 }
 
@@ -221,7 +222,7 @@ static std::vector<token_type> split(const std::string& s) {
             continue;
         }
 
-        if (is(last, op::blackslash)) {
+        if (is(last, op::backslash)) {
             if (!is_nonop(ch)) {
                 last = ch;
             } else if (ch == 'w') {
@@ -251,7 +252,7 @@ static std::vector<token_type> split(const std::string& s) {
             if (is_nonop(ch)) {
                 last = ch;
             } else if (ch == '\\') {
-                last = op::blackslash;
+                last = op::backslash;
                 continue;
             } else if (ch == '|') {
                 last = op::alt;

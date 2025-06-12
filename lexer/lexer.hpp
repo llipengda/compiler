@@ -3,6 +3,7 @@
 #define LEXER_LEXER_HPP
 
 #include "keywords.hpp"
+#include "token.hpp"
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -12,12 +13,12 @@ class lexer {
 public:
     lexer() = default;
 
-    using tokens_t = std::vector<token::token>;
+    using tokens_t = std::vector<token>;
 
-    tokens_t parse(const std::string& input) {
+    static tokens_t parse(const std::string& input) {
         std::size_t max_match = 0;
         std::string cur = input;
-        token::token_type cur_token;
+        token_type cur_token;
 
         std::size_t line = 0;
         std::size_t col = 0;
@@ -26,9 +27,7 @@ public:
 
         while (max_match < cur.size()) {
             for (auto& [pattern, token] : key_words) {
-                auto match = pattern.match_max(cur);
-
-                if (match > max_match) {
+                if (const auto match = pattern.match_max(cur); match > max_match) {
                     max_match = match;
                     cur_token = token;
                 }
@@ -39,10 +38,10 @@ public:
             }
 
             auto match_str = cur.substr(0, max_match);
-            auto lines = std::count(match_str.begin(), match_str.end(), '\n');
-            auto last_newline = match_str.find_last_of('\n');
+            const auto lines = std::count(match_str.begin(), match_str.end(), '\n');
+            const auto last_newline = match_str.find_last_of('\n');
 
-            if (cur_token != token::token_type::WHITESPACE) {
+            if (cur_token != WHITESPACE) {
                 tokens.emplace_back(cur_token, match_str, line + 1, col + 1);
             }
 
