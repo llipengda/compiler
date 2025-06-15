@@ -1,4 +1,4 @@
-// #define SHOW_DEBUG
+#define SHOW_DEBUG
 
 #include "grammar/LR1.hpp"
 #include "grammar/production.hpp"
@@ -7,27 +7,15 @@
 #include <string>
 #include <unordered_set>
 
-const std::unordered_set<std::string> terminals = {
-    "{", "}", "(", ")", "if", "then", "else", "while", "=", ";", "<", ">", "<=", ">=", "==", "+", "-", "*", "/", "ID", "NUM"};
+const std::unordered_set<std::string> terminals = {"+", "*", "a", "b"};
 
 const std::string gram = R"(
-program -> compoundstmt
-stmt ->  ifstmt  |  whilestmt  |  assgstmt  |  compoundstmt
-compoundstmt ->  { stmts }
-stmts ->  stmt stmts   |   E
-ifstmt ->  if ( boolexpr ) then stmt else stmt
-whilestmt ->  while ( boolexpr ) stmt
-assgstmt ->  ID = arithexpr ;
-boolexpr  ->  arithexpr boolop arithexpr
-boolop ->   <  |  >  |  <=  |  >=  | ==
-arithexpr  ->  multexpr arithexprprime
-arithexprprime ->  + multexpr arithexprprime  |  - multexpr arithexprprime  |   E
-multexpr ->  simpleexpr  multexprprime
-multexprprime ->  * simpleexpr multexprprime  |  / simpleexpr multexprprime  |   E
-simpleexpr ->  ID  |  NUM  |  ( arithexpr )
+E -> E + T | T
+T -> T F | F
+F -> F * | a | b
 )";
 
-const std::string epsilon_str = "E";
+const std::string epsilon_str = "e";
 
 std::vector<lexer::token> simple_lexer(const std::string& str) {
     std::vector<lexer::token> tokens;

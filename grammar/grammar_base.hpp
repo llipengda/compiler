@@ -13,6 +13,7 @@ class grammar_base {
 public:
     using symbol_set = std::unordered_set<production::symbol>;
     virtual void parse(const std::vector<lexer::token>&) = 0;
+    virtual void build() = 0;
     virtual ~grammar_base() = default;
 
     virtual void print_tree() const {
@@ -59,6 +60,18 @@ protected:
             }
         }
 
+        return result;
+    }
+
+    symbol_set calc_first(std::vector<production::symbol> symbols) {
+        symbol_set result;
+        for (const auto& sym : symbols) {
+            auto first_set = calc_first(sym);
+            result.insert(first_set.begin(), first_set.end());
+            if (!first_set.count(production::symbol::epsilon)) {
+                break;
+            }
+        }
         return result;
     }
 

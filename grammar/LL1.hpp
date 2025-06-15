@@ -27,8 +27,6 @@ public:
             const auto& prod = productions[i];
             symbol_map[prod.lhs].push_back(i);
         }
-
-        build();
     }
 
     explicit LL1(const std::string& str) {
@@ -37,14 +35,18 @@ public:
             const auto& prod = productions[i];
             symbol_map[prod.lhs].push_back(i);
         }
-
-        build();
     }
 
     LL1(const LL1&) = delete;
     LL1& operator=(const LL1&) = delete;
     LL1(LL1&&) = default;
     LL1& operator=(LL1&&) = default;
+
+    void build() override {
+        calc_first();
+        calc_follow();
+        build_parsing_table();
+    }
 
     void parse(const std::vector<lexer::token>& input) override {
         // std::vector<production::production> output;
@@ -216,12 +218,6 @@ public:
 
 private:
     table_t parsing_table;
-
-    void build() {
-        calc_first();
-        calc_follow();
-        build_parsing_table();
-    }
 
     void build_parsing_table() {
         for (const auto& prod : productions) {

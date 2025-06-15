@@ -3,8 +3,8 @@
 #define GRAMMAR_PRODUCTION_HPP
 
 #include <cctype>
-#include <functional>
 #include <cstddef>
+#include <functional>
 #include <ostream>
 #include <stdexcept>
 #include <string>
@@ -126,7 +126,18 @@ inline std::ostream& operator<<(std::ostream& os, const symbol& sym) {
     os << sym.name;
     return os;
 }
+} // namespace grammar::production
 
+namespace std {
+template <>
+struct hash<grammar::production::symbol> {
+    std::size_t operator()(const grammar::production::symbol& sym) const noexcept {
+        return std::hash<std::string>()(sym.name);
+    }
+};
+} // namespace std
+
+namespace grammar::production {
 class production {
 public:
     symbol lhs;
@@ -161,7 +172,7 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const production& prod);
 
-    static std::vector<production> parse(const std::string &str) {
+    static std::vector<production> parse(const std::string& str) {
         std::vector<production> productions;
         std::size_t pos = 0;
         while (pos < str.size()) {
@@ -209,7 +220,7 @@ inline std::ostream& operator<<(std::ostream& os, const production& prod) {
     return os;
 }
 
-class LR_production final : public production {
+class LR_production : public production {
 public:
     std::size_t dot_pos{};
 
@@ -284,16 +295,48 @@ public:
         return false;
     }
 };
+
+class LR1_production final : public LR_production {
+public:
+    symbol lookahead;
+
+    LR1_production() = default;
+
+    explicit LR1_production(const production& prod) {
+        throw std::invalid_argument("LR1_production requires a lookahead symbol");
+    }
+
+    explicit LR1_production(const production& prod, symbol&& lookahead) : LR_production(prod), lookahead(std::move(lookahead)) {}
+
+    explicit LR1_production(const production& prod, const symbol& lookahead) : LR_production(prod), lookahead(lookahead) {}
+
+    void set_lookahead(const symbol& lookahead) {
+        this->lookahead = lookahead;
+    }
+
+    [[nodiscard]] LR1_production next() const {
+        LR1_production next = *this;
+        if (dot_pos < rhs.size()) {
+            ++next.dot_pos;
+        }
+        return next;
+    }
+
+    [[nodiscard]] std::string to_string() const override {
+        return LR_production::to_string() + ", " + lookahead.name;
+    }
+
+    bool operator==(const LR1_production& other) const {
+        return LR_production::operator==(other) && lookahead == other.lookahead;
+    }
+
+    bool operator==(const production& other) const override {
+        return LR_production::operator==(other);
+    }
+};
 } // namespace grammar::production
 
 namespace std {
-template <>
-struct hash<grammar::production::symbol> {
-    std::size_t operator()(const grammar::production::symbol& sym) const noexcept {
-        return std::hash<std::string>()(sym.name);
-    }
-};
-
 template <>
 struct hash<grammar::production::LR_production> {
     std::size_t operator()(const grammar::production::LR_production& lr_prod) const noexcept {
@@ -302,6 +345,15 @@ struct hash<grammar::production::LR_production> {
             h ^= std::hash<grammar::production::symbol>()(sym) + 0x9e3779b9 + (h << 6) + (h >> 2);
         }
         return h ^ (lr_prod.dot_pos << 16);
+    }
+};
+
+template <>
+struct hash<grammar::production::LR1_production> {
+    std::size_t operator()(const grammar::production::LR1_production& lr1_prod) const noexcept {
+        std::size_t h = std::hash<grammar::production::LR_production>()(lr1_prod);
+        h ^= std::hash<grammar::production::symbol>()(lr1_prod.lookahead) + 0x9e3779b9 + (h << 6) + (h >> 2);
+        return h;
     }
 };
 } // namespace std

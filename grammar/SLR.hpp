@@ -11,13 +11,11 @@
 #include <functional>
 #include <iomanip>
 #include <iostream>
-#include <limits>
 #include <set>
 #include <stack>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-
 
 namespace grammar {
 struct action {
@@ -216,10 +214,12 @@ public:
     }
 };
 
-class SLR final : public grammar_base {
+template <typename Production = production::LR_production>
+class SLR : public grammar_base {
 public:
-    using items_t = std::unordered_set<production::LR_production>;
-    using after_dot_t = std::unordered_set<production::symbol>;
+    using production_t = Production;
+    // using production_t = production::LR_production; // for intellisense
+    static_assert(std::is_base_of<production::LR_production, production_t>::value);
 
     explicit SLR(const std::vector<production::production>& productions) {
         this->productions = productions;
@@ -231,8 +231,6 @@ public:
             const auto& prod = productions[i];
             symbol_map[prod.lhs].push_back(i);
         }
-
-        build();
     }
 
     explicit SLR(const std::string& str) {
@@ -252,8 +250,16 @@ public:
             std::cout << prod << std::endl;
         }
 #endif
+    }
 
-        build();
+    void build() override {
+        calc_first();
+        calc_follow();
+        build_items_set();
+#ifdef SHOW_DEBUG
+        print_items_set();
+        print_tables();
+#endif
     }
 
     void parse(const std::vector<lexer::token>& input) override {
@@ -334,9 +340,11 @@ public:
         steps.print();
     }
 
-private:
+protected:
+    using items_t = std::unordered_set<production_t>;
+
     std::vector<items_t> items_set;
-    std::vector<after_dot_t> after_dot_set;
+    std::vector<symbol_set> after_dot_set;
     std::unordered_map<std::size_t, std::unordered_map<production::symbol, action>> action_table;
     std::unordered_map<std::size_t, std::unordered_map<production::symbol, std::size_t>> goto_table;
     rightmost_step steps;
@@ -344,26 +352,20 @@ private:
     using error_handle_fn = std::function<void(std::stack<LR_stack_t>&, std::vector<lexer::token>&, std::size_t&)>;
     std::vector<error_handle_fn> error_handlers;
 
-    void build() {
-        calc_first();
-        calc_follow();
-        build_items_set();
-#ifdef SHOW_DEBUG
-        print_items_set();
-        print_tables();
-#endif
+    virtual void init_first_item_set() {
+        items_t initial_items{production_t(productions[0])};
+        add_closure(initial_items, 0);
     }
 
     void build_items_set() {
         items_set.reserve(productions.size() * 2);
         after_dot_set.reserve(productions.size() * 2);
 
-        std::unordered_set<production::symbol> after_dot;
+        symbol_set after_dot;
         after_dot.insert(productions[0].rhs[0]);
         after_dot_set.emplace_back(std::move(after_dot));
 
-        items_t initial_items{production::LR_production(productions[0])};
-        add_closure(initial_items, 0);
+        init_first_item_set();
 
         std::size_t init = 0;
         std::size_t end = items_set.size();
@@ -378,63 +380,50 @@ private:
             end = items_set.size();
         }
 
-        for (auto& [row, col] : action_table) {
-            if (!col.count(production::symbol{"}"})) {
-                col[production::symbol{"}"}] = action::error(0);
-            }
-        }
+        // for (auto& [row, col] : action_table) {
+        //     if (!col.count(production::symbol{"}"})) {
+        //         col[production::symbol{"}"}] = action::error(0);
+        //     }
+        // }
 
-        error_handlers.emplace_back([&](std::stack<LR_stack_t>& stack, std::vector<lexer::token>& in, std::size_t& pos) {
-            std::cerr << "Missing semicolon at line " << in[pos].line << ", column " << in[pos].column << std::endl;
-            in.insert(in.begin() + pos, lexer::token{";"});
-            steps.insert_symbol(in.size() - pos - 1, production::symbol{";"});
-        });
+        // error_handlers.emplace_back([&](std::stack<LR_stack_t>& stack, std::vector<lexer::token>& in, std::size_t& pos) {
+        //     std::cerr << "Missing semicolon at line " << in[pos].line << ", column " << in[pos].column << std::endl;
+        //     in.insert(in.begin() + pos, lexer::token{";"});
+        //     steps.insert_symbol(in.size() - pos - 1, production::symbol{";"});
+        // });
     }
 
-    std::pair<bool, std::size_t> add_closure(items_t& current_items, std::size_t idx) {
-        auto& after_dot = after_dot_set[idx];
-
-        auto add = [&](const std::unordered_set<production::symbol>& symbols) {
-            std::unordered_set<production::symbol> to_add;
-            for (const auto& sym : symbols) {
-                if (!sym.is_non_terminal()) {
+    /**
+     * 扩展给定的符号集：对于每个非终结符，查找其产生式，将对应的LR(0)项插入当前项集，
+     * 并收集新出现的点后的符号（未被after_dot包含的），用于后续扩展。
+     *
+     * @param symbols 需要扩展的符号集，通常是当前项集点后的符号。
+     * @param current_item_set 当前LR(0)项集，会被插入新的项。
+     * @param after_dot 已经考虑过的点后符号集，用于去重。
+     * @return 新增的点后符号集（未被考虑过的），用于下一轮扩展。
+     */
+    virtual symbol_set expand_item_set(const symbol_set& symbols, items_t& current_item_set, const symbol_set& after_dot) {
+        symbol_set to_add;
+        for (const auto& sym : symbols) {
+            if (!sym.is_non_terminal()) {
+                continue;
+            }
+            for (auto id : symbol_map[sym]) {
+                auto lr_prod = production_t(productions[id]);
+                current_item_set.insert(lr_prod);
+                if (lr_prod.is_end()) {
                     continue;
                 }
-                for (auto id : symbol_map[sym]) {
-                    auto lr_prod = production::LR_production(productions[id]);
-                    current_items.insert(lr_prod);
-                    if (lr_prod.is_end()) {
-                        continue;
-                    }
-                    const auto& after_dot_sym = lr_prod.symbol_after_dot();
-                    if (!after_dot.count(after_dot_sym)) {
-                        to_add.insert(after_dot_sym);
-                    }
+                const auto& after_dot_sym = lr_prod.symbol_after_dot();
+                if (!after_dot.count(after_dot_sym)) {
+                    to_add.insert(after_dot_sym);
                 }
             }
-            return to_add;
-        };
-
-        auto symbols = after_dot;
-        bool is_empty;
-        do {
-            auto to_add = add(symbols);
-            after_dot.insert(to_add.begin(), to_add.end());
-            is_empty = to_add.empty();
-            symbols = std::move(to_add);
-        } while (!is_empty);
-
-        if (current_items.empty()) {
-            return {false, -1};
         }
+        return to_add;
+    };
 
-        if (const auto res = std::find(items_set.begin(), items_set.end(), current_items); res != items_set.end()) {
-            using diff_t = decltype(after_dot_set)::difference_type;
-            assert(idx < after_dot_set.size() && idx < static_cast<std::size_t>(std::numeric_limits<diff_t>::max()));
-            after_dot_set.erase(std::next(after_dot_set.begin(), static_cast<diff_t>(idx)));
-            return {true, res - items_set.begin()};
-        }
-
+    virtual void build_acc_and_reduce(const items_t& current_items, const std::size_t idx) {
         for (const auto& item : current_items) {
             if (item.is_end()) {
                 if (item.lhs == productions[0].lhs) {
@@ -456,15 +445,63 @@ private:
                 }
             }
         }
+    }
+
+    /**
+     * @brief 为给定的项集添加闭包到SLR分析器的项集集合中。
+     *
+     * 此函数针对指定索引（idx）在after_dot_set中的项集，计算其闭包。
+     * 它会不断对项集应用闭包操作，直到没有新项可加入为止。
+     * 如果生成的项集已存在于items_set中，则会删除after_dot_set中对应的条目，并返回已存在项集的索引。
+     * 否则，将新项集加入items_set，并根据需要更新action_table（如accept或reduce动作）。
+     *
+     * @param current_items 当前需要扩展的项集的引用。
+     * @param idx after_dot_set中对应项集的索引。
+     * @return std::pair<bool, std::size_t>
+     *         - 第一个元素为true表示找到新闭包或已存在闭包，false表示current_items为空。
+     *         - 第二个元素为该项集在items_set中的索引，若未找到/添加则为-1。
+     */
+    virtual std::pair<bool, std::size_t> add_closure(items_t& current_items, std::size_t idx) {
+        auto& after_dot = after_dot_set[idx];
+
+        auto symbols = after_dot;
+        bool is_empty;
+        do {
+            auto to_add = expand_item_set(symbols, current_items, after_dot);
+            after_dot.insert(to_add.begin(), to_add.end());
+            is_empty = to_add.empty();
+            symbols = std::move(to_add);
+        } while (!is_empty);
+
+        if (current_items.empty()) {
+            return {false, -1};
+        }
+
+        if (const auto res = std::find(items_set.begin(), items_set.end(), current_items); res != items_set.end()) {
+            after_dot_set.erase(std::next(after_dot_set.begin(), idx));
+            return {true, res - items_set.begin()};
+        }
+
+        build_acc_and_reduce(current_items, idx);
 
         items_set.emplace_back(std::move(current_items));
         return {true, items_set.size() - 1};
     }
 
-    void move_dot(std::size_t idx, const production::symbol& sym) {
+    /**
+     * @brief 在指定项集内，将点（dot）向指定符号 sym 后移，并生成新的项集。
+     *
+     * 该函数遍历索引为 idx 的项集中的所有项，查找点前为 sym 的项，将点向后移动一位，形成新的项集。
+     * 对新项集中的每个项，如果点未到末尾，则收集点后的符号，形成 after_dot 集合。
+     * 如果新项集非空，则为其添加闭包，并根据 sym 的类型（非终结符/终结符/结束符）更新 GOTO 或 ACTION 表。
+     *
+     * @param idx 当前项集在项集集合中的索引。
+     * @param sym 要将点移过的文法符号。
+     */
+    virtual void move_dot(std::size_t idx, const production::symbol& sym) {
         const auto& items = items_set[idx];
         items_t new_items;
-        after_dot_t after_dot;
+        symbol_set after_dot;
         for (const auto& item : items) {
             if (!item.is_end() && item.symbol_after_dot() == sym) {
                 auto next_item = item.next();
