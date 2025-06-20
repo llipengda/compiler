@@ -2,14 +2,40 @@
 #ifndef LEXER_LEXER_HPP
 #define LEXER_LEXER_HPP
 
+#ifdef USE_STD_REGEX
+#include <regex>
+#else
 #include "../regex/regex.hpp"
+#endif
+
 #include <algorithm>
 #include <string>
-#include <tuple>
 #include <unordered_map>
 #include <vector>
+#include <iostream>
 
 namespace lexer {
+
+#ifdef USE_STD_REGEX
+class regex_wrapper {
+public:
+    explicit regex_wrapper(const std::string& pattern) : regex_(pattern) {}
+    
+    std::size_t match_max(const std::string& input) const {
+        std::smatch match;
+        if (std::regex_search(input, match, regex_, std::regex_constants::match_continuous)) {
+            return match.length();
+        }
+        return 0;
+    }
+
+private:
+    std::regex regex_;
+};
+#else
+using regex_wrapper = regex::regex;
+#endif
+
 struct token {
     int type;
     std::string value;
@@ -19,7 +45,7 @@ struct token {
     template <typename TokenType>
     token(const TokenType type, std::string value, const std::size_t line, const std::size_t column)
         : type(static_cast<int>(type)), value(std::move(value)), line(line), column(column) {
-        static_assert(std::is_enum<TokenType>::value || std::is_convertible_v<TokenType, int>, "token_type must be an enum type");
+        static_assert(std::is_enum<TokenType>::value || std::is_convertible<TokenType, int>::value, "token_type must be an enum type");
     }
 
     explicit token(std::string value) : type(-1), value(std::move(value)), line(0), column(0) {}
@@ -30,10 +56,21 @@ struct token {
 class lexer {
 public:
     using tokens_t = std::vector<token>;
-    using keyword_t = std::pair<regex::regex, int>;
+    using keyword_t = std::pair<regex_wrapper, int>;
 
     template <typename TokenType>
-    using input_keywords_t = std::vector<std::tuple<regex::regex, TokenType, std::string>>;
+    struct input_keyword {
+        std::string pattern_str;  // Store pattern as string for both regex types
+        TokenType token;
+        std::string name;
+        
+        // Constructor that accepts string pattern
+        input_keyword(const std::string& pattern, TokenType tok, const std::string& n)
+            : pattern_str(pattern), token(tok), name(n) {}
+    };
+
+    template <typename TokenType>
+    using input_keywords_t = std::vector<input_keyword<TokenType>>;
 
     static int whitespace;
     static std::unordered_map<int, std::string> token_names;
@@ -43,9 +80,12 @@ public:
         static_assert(std::is_enum<TokenType>::value, "token_type must be an enum type");
         whitespace = static_cast<int>(whitespace_);
 
-        for (const auto& [pattern, token, name] : key_words) {
+        for (const auto& keyword : key_words) {
+            const auto& pattern_str = keyword.pattern_str;
+            const auto& token = keyword.token;
+            const auto& name = keyword.name;
             token_names.insert({static_cast<int>(token), name});
-            this->key_words.emplace_back(pattern, static_cast<int>(token));
+            this->key_words.emplace_back(regex_wrapper(pattern_str), static_cast<int>(token));
         }
     }
 
@@ -113,6 +153,7 @@ inline std::ostream& operator<<(std::ostream& os, const token& t) {
     os << "Token(" << lexer::token_names.at(t.type) << ", \"" << t.value << "\", line: " << t.line << ", column: " << t.column << ")";
     return os;
 }
+
 } // namespace lexer
 
 #endif // LEXER_LEXER_HPP

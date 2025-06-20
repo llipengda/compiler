@@ -1,10 +1,10 @@
 #pragma once
-#include <ostream>
-#include <unordered_map>
 #ifndef UTILS_HPP
 #define UTILS_HPP
 #include <iostream>
+#include <ostream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace utils {
@@ -15,12 +15,14 @@ inline std::string trim(const std::string& str) {
     return str.substr(start, end - start + 1);
 }
 
+#if __cplusplus >= 201703L
 inline std::string_view trim(std::string_view str) {
     const auto start = str.find_first_not_of(" \t\n\r");
     if (start == std::string_view::npos) return "";
     const auto end = str.find_last_not_of(" \t\n\r");
     return str.substr(start, end - start + 1);
 }
+#endif
 
 inline std::vector<std::string> split_trim(const std::string& s, const std::string& delimiter) {
     std::vector<std::string> result;
@@ -46,6 +48,7 @@ inline std::vector<std::string> split_trim(const std::string& s, const std::stri
     return result;
 }
 
+#if __cplusplus >= 201703L
 inline std::vector<std::string_view> split_trim(std::string_view s, std::string_view delimiter) {
     std::vector<std::string_view> result;
     size_t pos = 0;
@@ -72,6 +75,7 @@ inline std::vector<std::string_view> split_trim(std::string_view s, std::string_
 
     return result;
 }
+#endif
 
 inline std::string join(const std::vector<std::string>& strings, const std::string& delimiter) {
     std::string result;
@@ -84,6 +88,7 @@ inline std::string join(const std::vector<std::string>& strings, const std::stri
     return result;
 }
 
+#if __cplusplus >= 201703L
 inline std::string join(const std::vector<std::string_view>& strings, const std::string_view& delimiter) {
     std::string result;
     for (const auto& s : strings) {
@@ -94,6 +99,7 @@ inline std::string join(const std::vector<std::string_view>& strings, const std:
     }
     return result;
 }
+#endif
 
 template <typename T>
 inline void print(std::ostream& os, const std::vector<T>& v) {
@@ -128,6 +134,17 @@ inline void println(std::ostream& os, T&& t) {
 template <typename T>
 inline void println(T&& t) {
     println(std::cout, std::forward<T>(t));
+}
+
+inline bool starts_with(const std::string& str, const std::string& prefix) {
+#if __cplusplus >= 202002L
+    return str.starts_with(prefix);
+#else
+    if (str.find(prefix) == 0) {
+        return true;
+    }
+    return false;
+#endif
 }
 } // namespace utils
 

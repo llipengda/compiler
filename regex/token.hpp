@@ -4,6 +4,7 @@
 #define REGEX_TOKEN_HPP
 
 #include "exception.hpp"
+#include "token_type.hpp"
 
 #include <initializer_list>
 #include <iostream>
@@ -13,88 +14,10 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include <utility>
 #include <variant>
 #include <vector>
 
 namespace regex::token {
-enum class symbol {
-    end_mark
-};
-
-enum class op {
-    concat,
-    alt,
-    star,
-    plus,
-    left_par,
-    right_par,
-    backslash
-};
-
-const std::unordered_map<symbol, std::string> symbol_map = {
-    {symbol::end_mark, "#"}};
-
-const std::unordered_map<op, std::string> op_map = {
-    {op::concat, "·"},
-    {op::alt, "|"},
-    {op::star, "*"},
-    {op::plus, "+"},
-    {op::left_par, "("},
-    {op::right_par, ")"},
-    {op::backslash, "\\"}};
-
-enum class nothing {};
-
-struct char_set {
-    std::unordered_set<char> chars;
-    bool is_negative = false;
-
-    char_set() = default;
-
-    explicit char_set(const char from, const char to, const bool is_negative = false) : is_negative(is_negative) {
-        for (char ch = from; ch <= to; ++ch) {
-            chars.insert(ch);
-        }
-    }
-
-    explicit char_set(const std::initializer_list<char> init, bool is_negative = false) : is_negative(is_negative) {
-        for (const auto& ch : init) {
-            chars.insert(ch);
-        }
-    }
-
-    explicit char_set(std::initializer_list<std::pair<char, char>> init, const bool is_negative = false) : is_negative(is_negative) {
-        for (const auto& [from, to] : init) {
-            add(from, to);
-        }
-    }
-
-    void add(const char ch) {
-        chars.insert(ch);
-    }
-
-    void add(const char_set& other) {
-        chars.insert(other.chars.begin(), other.chars.end());
-    }
-
-    void add(const char from, const char to) {
-        for (char ch = from; ch <= to; ++ch) {
-            chars.insert(ch);
-        }
-    }
-
-    bool operator==(const char_set& other) const {
-        return chars == other.chars && is_negative == other.is_negative;
-    }
-};
-
-static const char_set words{{'a', 'z'}, {'A', 'Z'}, {'0', '9'}, {'_', '_'}};
-static const char_set digits('0', '9');
-static const char_set whitespaces{' ', '\t', '\n', '\r', '\f', '\v'};
-
-using token_type = std::variant<nothing, symbol, op, char_set, char>;
-
 struct token_type_hash {
     std::size_t operator()(const token_type& t) const {
         if (std::holds_alternative<char>(t)) {

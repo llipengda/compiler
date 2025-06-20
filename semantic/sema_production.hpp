@@ -20,7 +20,9 @@ public:
 
     sema_symbol(const std::string& str) : grammar::production::symbol(str) {}
 
+#if __cplusplus >= 201703L
     sema_symbol(const std::string_view str) : grammar::production::symbol(std::string(str)) {}
+#endif
 
     sema_symbol(const char* str) : grammar::production::symbol(std::string(str)) {}
 
@@ -132,7 +134,7 @@ public:
         }
         int cnt = 1;
         for (const auto& [key, _] : back) {
-            if (key.starts_with(sym->name + "<")) {
+            if (utils::starts_with(key, sym->name + "<")) {
                 cnt++;
             }
         }
@@ -161,6 +163,8 @@ public:
 
         rhs_value_t(const symbol& sym) : sym(sym), is_symbol(true), is_action(false) {}
         rhs_value_t(const action& act) : act(act), is_symbol(false), is_action(true) {}
+
+        rhs_value_t(const char* str) : rhs_value_t(symbol(str)) {}
 
         symbol& get_symbol() {
             assert(is_symbol && "Attempting to get symbol from an action");
@@ -232,9 +236,20 @@ public:
 
     sema_production() = default;
 
+#ifdef SEMA_PROD_USE_INITIALIZER_LIST
+    sema_production(const std::string& lhs_str, std::initializer_list<rhs_value_t> rhs_values)
+        : lhs(lhs_str), rhs(rhs_values) {}
+#else
+#if __cplusplus >= 201703L
     template <typename... Args>
     sema_production(const std::string_view lhs_str, Args&&... rhs_values)
         : lhs(lhs_str), rhs{rhs_value_t(std::forward<Args>(rhs_values))...} {}
+#else
+    template <typename... Args>
+    sema_production(const std::string& lhs_str, Args&&... rhs_values)
+        : lhs(lhs_str), rhs{rhs_value_t(std::forward<Args>(rhs_values))...} {}
+#endif
+#endif
         
     sema_production replace(const grammar::production::symbol& sym) {
         auto new_prod = *this;
@@ -247,7 +262,7 @@ public:
     }
 };
 
-#define ACT(...) ([](semantic::sema_env& env) { __VA_ARGS__ })
+#define ACT(...) semantic::sema_production::rhs_value_t([](semantic::sema_env& env) { __VA_ARGS__ })
 #define GET(x) auto& x = env.symbol(#x)
 #define TO_STRING(x) #x
 #define GETI(x, i) auto& x##_##i = env.symbol(TO_STRING(x<i>))
