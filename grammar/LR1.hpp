@@ -7,7 +7,7 @@
 #include <vector>
 
 namespace grammar {
-class LR1 final : public SLR<production::LR1_production> {
+class LR1 : public SLR<production::LR1_production> {
 public:
     explicit LR1(const std::vector<production::production>& productions) : SLR<production::LR1_production>(productions) {}
 

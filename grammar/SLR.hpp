@@ -221,16 +221,27 @@ public:
     // using production_t = production::LR_production; // for intellisense
     static_assert(std::is_base_of<production::LR_production, production_t>::value);
 
-    explicit SLR(const std::vector<production::production>& productions) {
-        this->productions = productions;
+    using action_table_t = std::unordered_map<std::size_t, std::unordered_map<production::symbol, action>>;
+    using goto_table_t = std::unordered_map<std::size_t, std::unordered_map<production::symbol, std::size_t>>;
+    using error_handle_fn = std::function<void(std::stack<LR_stack_t>&, std::vector<lexer::token>&, std::size_t&)>;
 
-        const auto& first_prod = productions[0];
-        this->productions.emplace(productions.begin(), first_prod.lhs.name + '\'' + " -> " + first_prod.lhs.name);
+    explicit SLR(const std::vector<production::production>& productions_) {
+        productions = productions_;
+
+        const auto& first_prod = productions_[0];
+        productions.emplace(productions.begin(), first_prod.lhs.name + '\'' + " -> " + first_prod.lhs.name);
 
         for (std::size_t i = 0; i < productions.size(); ++i) {
             const auto& prod = productions[i];
             symbol_map[prod.lhs].push_back(i);
         }
+
+#ifdef SHOW_DEBUG
+        std::cout << "Grammar:\n";
+        for (const auto& prod : productions) {
+            std::cout << prod << std::endl;
+        }
+#endif
     }
 
     explicit SLR(const std::string& str) {
@@ -274,7 +285,7 @@ public:
         std::size_t pos = 0;
 
         while (pos < in.size() || !stack.empty()) {
-            auto cur_input = production::symbol{std::string(in[pos])};
+            auto cur_input = production::symbol{in[pos]};
             auto& top = stack.top();
 
             assert(top.is_state());
@@ -298,7 +309,10 @@ public:
 #endif
             if (act.is_accept()) {
                 for (auto it = output.rbegin(); it != output.rend(); ++it) {
-                    tree_.add_r(*it);
+                    tree_->add_r(*it);
+                }
+                for (const auto& tk : in) {
+                    tree_->update_r(production::symbol{tk});
                 }
                 return;
             }
@@ -340,17 +354,22 @@ public:
         steps.print();
     }
 
+    void init_error_handlers(std::function<void(action_table_t&, goto_table_t&, std::vector<error_handle_fn>&)> fn) {
+        init_error_handlers_fn = std::move(fn);
+    }
+
 protected:
     using items_t = std::unordered_set<production_t>;
 
     std::vector<items_t> items_set;
     std::vector<symbol_set> after_dot_set;
-    std::unordered_map<std::size_t, std::unordered_map<production::symbol, action>> action_table;
-    std::unordered_map<std::size_t, std::unordered_map<production::symbol, std::size_t>> goto_table;
+    action_table_t action_table;
+    goto_table_t goto_table;
     rightmost_step steps;
 
-    using error_handle_fn = std::function<void(std::stack<LR_stack_t>&, std::vector<lexer::token>&, std::size_t&)>;
     std::vector<error_handle_fn> error_handlers;
+
+    std::function<void(action_table_t&, goto_table_t&, std::vector<error_handle_fn>&)> init_error_handlers_fn;
 
     virtual void init_first_item_set() {
         items_t initial_items{production_t(productions[0])};
@@ -378,6 +397,10 @@ protected:
             }
             init = end;
             end = items_set.size();
+        }
+
+        if (init_error_handlers_fn) {
+            init_error_handlers_fn(action_table, goto_table, error_handlers);
         }
 
         // for (auto& [row, col] : action_table) {

@@ -115,7 +115,7 @@ struct token_type_hash {
     }
 };
 
-static int get_precedence(op opr) {
+inline int get_precedence(op opr) {
     switch (opr) {
     case op::star: return 3;
     case op::plus: return 3;
@@ -128,7 +128,7 @@ static int get_precedence(op opr) {
     return -1;
 }
 
-static int get_precedence(const token_type &ch) {
+inline int get_precedence(const token_type& ch) {
     op opr;
     if (std::holds_alternative<op>(ch)) {
         opr = std::get<op>(ch);
@@ -139,31 +139,31 @@ static int get_precedence(const token_type &ch) {
     return get_precedence(opr);
 }
 
-static bool is_char(const token_type &ch) {
+inline bool is_char(const token_type& ch) {
     return std::holds_alternative<char>(ch);
 }
 
-static bool is_symbol(const token_type &ch) {
+inline bool is_symbol(const token_type& ch) {
     return std::holds_alternative<symbol>(ch);
 }
 
-static bool is_op(const token_type &ch) {
+inline bool is_op(const token_type& ch) {
     return std::holds_alternative<op>(ch);
 }
 
-static bool is_char_set(const token_type &ch) {
+inline bool is_char_set(const token_type& ch) {
     return std::holds_alternative<char_set>(ch);
 }
 
 template <typename T>
-static bool is(token_type ch, T other) {
+inline bool is(token_type ch, T other) {
     if (auto* p = std::get_if<T>(&ch)) {
         return *p == other;
     }
     return false;
 }
 
-static bool match(char c, const token_type &ch) {
+inline bool match(char c, const token_type& ch) {
     if (is_char(ch)) {
         return std::get<char>(ch) == c;
     }
@@ -177,15 +177,15 @@ static bool match(char c, const token_type &ch) {
     return false;
 }
 
-static bool is_nonop(const char ch) {
+inline bool is_nonop(const char ch) {
     return ch != '\\' && ch != '|' && ch != '*' && ch != '(' && ch != ')' && ch != '+' && ch != '[' && ch != ']';
 }
 
-static bool is_nonop(const token_type& ch) {
+inline bool is_nonop(const token_type& ch) {
     return is_char(ch) || is_symbol(ch) || is_char_set(ch);
 }
 
-static std::vector<token_type> split(const std::string& s) {
+inline std::vector<token_type> split(const std::string& s) {
     std::vector<token_type> result{op::left_par};
     token_type last = nothing{};
     bool in_char_set = false;
@@ -290,7 +290,7 @@ static std::vector<token_type> split(const std::string& s) {
     return result;
 }
 
-static std::vector<token_type> to_postfix(const std::vector<token_type>& v) {
+inline std::vector<token_type> to_postfix(const std::vector<token_type>& v) {
     std::vector<token_type> res;
     std::stack<token_type> ops;
 
@@ -422,14 +422,14 @@ inline std::ostream& operator<<(std::ostream& os, const token_type& ch) {
     return os;
 }
 
-static void print(const std::vector<token_type>& v) {
+inline void print(const std::vector<token_type>& v) {
     for (const auto& ch : v) {
         std::cout << ch << ' ';
     }
     std::cout << std::endl;
 }
 
-static char_set to_char_set(const token_type& token) {
+inline char_set to_char_set(const token_type& token) {
     if (std::holds_alternative<char>(token)) {
         return char_set{std::get<char>(token)};
     } else if (std::holds_alternative<char_set>(token)) {

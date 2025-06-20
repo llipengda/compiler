@@ -123,11 +123,11 @@ public:
     explicit regex_tree(const std::string& s) {
         auto ss = token::split(s);
 #ifdef SHOW_DEBUG
-        ::regex::print(ss);
+        ::regex::token::print(ss);
 #endif
         auto postfix = to_postfix(ss);
 #ifdef SHOW_DEBUG
-        ::regex::print(postfix);
+        ::regex::token::print(postfix);
 #endif
 
         std::stack<regex_node::node_ptr_t> st;

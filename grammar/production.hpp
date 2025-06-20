@@ -2,6 +2,7 @@
 #ifndef GRAMMAR_PRODUCTION_HPP
 #define GRAMMAR_PRODUCTION_HPP
 
+#include "../lexer/lexer.hpp"
 #include <cctype>
 #include <cstddef>
 #include <functional>
@@ -9,6 +10,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+
 
 namespace grammar::production {
 struct symbol {
@@ -21,6 +23,10 @@ struct symbol {
 
     type type;
     std::string name;
+    std::string lexval;
+
+    std::size_t line = 0;
+    std::size_t column = 0;
 
     static std::string epsilon_str;
     static std::string end_mark_str;
@@ -33,6 +39,7 @@ struct symbol {
     symbol() {
         type = type::epsilon;
         name = std::string(epsilon_str);
+        lexval = std::string(epsilon_str);
     }
 
     explicit symbol(const std::string& str) {
@@ -49,6 +56,36 @@ struct symbol {
         }
 
         name = trimed;
+        lexval = trimed;
+    }
+
+    explicit symbol(const lexer::token& token) : symbol(std::string(token)) {
+        update(token);
+    }
+
+    void update(const lexer::token& token) {
+        this->lexval = token.value;
+        this->line = token.line;
+        this->column = token.column;
+    }
+
+    void update(const symbol& other) {
+        this->lexval = other.lexval;
+        this->line = other.line;
+        this->column = other.column;
+    }
+
+    void update_pos(const symbol& other) {
+        this->line = other.line;
+        this->column = other.column;
+    }
+
+    [[nodiscard]] std::string to_string() const {
+        return name;
+    }
+
+    [[nodiscard]] std::string get_lexval() const {
+        return lexval;
     }
 
     [[nodiscard]] bool is_terminal() const {
@@ -80,24 +117,6 @@ struct symbol {
 
     bool operator!=(const symbol& other) const {
         return !(*this == other);
-    }
-
-    static void set_epsilon_str(const std::string& str) {
-        epsilon_str = str;
-        epsilon = symbol(epsilon_str);
-    }
-
-    static void set_end_mark_str(const std::string& str) {
-        end_mark_str = str;
-        end_mark = symbol(end_mark_str);
-    }
-
-    static void set_terminal_rule(const std::function<bool(const std::string&)>& rule) {
-        terminal_rule = rule;
-    }
-
-    static void set_terminal_rule(std::function<bool(const std::string&)>&& rule) {
-        terminal_rule = std::move(rule);
     }
 
 private:
@@ -338,6 +357,17 @@ public:
 
 namespace std {
 template <>
+struct hash<grammar::production::production> {
+    std::size_t operator()(const grammar::production::production& prod) const noexcept {
+        std::size_t h = std::hash<grammar::production::symbol>()(prod.lhs);
+        for (const auto& sym : prod.rhs) {
+            h ^= std::hash<grammar::production::symbol>()(sym) + 0x9e3779b9 + (h << 6) + (h >> 2);
+        }
+        return h;
+    }
+};
+
+template <>
 struct hash<grammar::production::LR_production> {
     std::size_t operator()(const grammar::production::LR_production& lr_prod) const noexcept {
         std::size_t h = std::hash<grammar::production::symbol>()(lr_prod.lhs);
@@ -357,5 +387,29 @@ struct hash<grammar::production::LR1_production> {
     }
 };
 } // namespace std
+
+namespace grammar {
+inline void set_epsilon_str(const std::string& str) {
+    using namespace grammar::production;
+    symbol::epsilon_str = str;
+    symbol::epsilon = symbol(symbol::epsilon_str);
+}
+
+inline void set_end_mark_str(const std::string& str) {
+    using namespace grammar::production;
+    symbol::end_mark_str = str;
+    symbol::end_mark = symbol(symbol::end_mark_str);
+}
+
+inline void set_terminal_rule(const std::function<bool(const std::string&)>& rule) {
+    using namespace grammar::production;
+    symbol::terminal_rule = rule;
+}
+
+inline void set_terminal_rule(std::function<bool(const std::string&)>&& rule) {
+    using namespace grammar::production;
+    symbol::terminal_rule = std::move(rule);
+}
+} // namespace grammar
 
 #endif // GRAMMAR_PRODUCTION_HPP

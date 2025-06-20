@@ -5,7 +5,6 @@
 #include "exception.hpp"
 #include "grammar_base.hpp"
 #include "production.hpp"
-#include "tree.hpp"
 #include <cstddef>
 #include <iomanip>
 #include <ios>
@@ -16,7 +15,7 @@
 #include <algorithm>
 
 namespace grammar {
-class LL1 final : public grammar_base {
+class LL1 : public grammar_base {
 public:
     using table_t = std::unordered_map<production::symbol, std::unordered_map<production::symbol, production::production>>;
 
@@ -37,11 +36,6 @@ public:
         }
     }
 
-    LL1(const LL1&) = delete;
-    LL1& operator=(const LL1&) = delete;
-    LL1(LL1&&) = default;
-    LL1& operator=(LL1&&) = default;
-
     void build() override {
         calc_first();
         calc_follow();
@@ -61,7 +55,7 @@ public:
         std::size_t pos = 0;
 
         while (pos < in.size() || !stack.empty()) {
-            auto cur_input = production::symbol{std::string(in[pos])};
+            auto cur_input = production::symbol{in[pos]};
             auto& top = stack.top();
 
             auto get_pos = [&]() {
@@ -72,6 +66,7 @@ public:
                 if (top == cur_input) {
                     pos++;
                     stack.pop();
+                    tree_->update(cur_input);
                 } else {
                     stack.pop();
                     std::cerr << "Expect: " << top.name << " but got: " << cur_input.name << ' ' << get_pos() << '\n';
@@ -83,7 +78,7 @@ public:
                     // throw exception::grammar_error("Unexpected token: " + cur_input.name);
                     if (first.at(top).count(production::symbol::epsilon)) {
                         stack.pop();
-                        tree_.add(production::production(top.name + " -> " + production::symbol::epsilon_str));
+                        tree_->add(production::production(top.name + " -> " + production::symbol::epsilon_str));
                     } else if (!follow.at(top).count(cur_input)) {
                         pos++;
                     } else {
@@ -95,7 +90,7 @@ public:
                 stack.pop();
                 const auto& prod = table.at(cur_input);
                 // output.push_back(prod);
-                tree_.add(prod);
+                tree_->add(prod);
                 const auto& symbols = prod.rhs;
 
                 if (symbols.size() == 1 && symbols[0].is_epsilon()) {

@@ -1,8 +1,9 @@
 #pragma once
+#include <memory>
 #ifndef GRAMMAR_BASE_HPP
 #define GRAMMAR_BASE_HPP
 
-#include "../lexer/token.hpp"
+#include "../lexer/lexer.hpp"
 #include "production.hpp"
 #include "tree.hpp"
 #include <stack>
@@ -17,7 +18,11 @@ public:
     virtual ~grammar_base() = default;
 
     virtual void print_tree() const {
-        tree_.print();
+        tree_->print();
+    }
+
+    std::shared_ptr<tree> get_tree() const {
+        return tree_;
     }
 
 protected:
@@ -25,7 +30,7 @@ protected:
     std::unordered_map<production::symbol, symbol_set> first;
     std::unordered_map<production::symbol, symbol_set> follow;
     std::unordered_map<production::symbol, std::vector<std::size_t>> symbol_map;
-    tree tree_;
+    std::shared_ptr<tree> tree_ = std::make_shared<tree>();
 
     void calc_first() {
         for (const auto& prod : productions) {
