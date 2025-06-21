@@ -32,6 +32,8 @@ lexer::tokens_t lexer::parse(const std::string& input, bool skip_whitespace) con
 
     tokens_t tokens;
 
+    token err_token(-1, "", -1, -1);
+    bool is_err = false;
     while (max_match < cur.size()) {
         for (auto& [pattern, token] : key_words) {
             if (const auto match = pattern.match_max(cur); match > max_match) {
@@ -41,7 +43,21 @@ lexer::tokens_t lexer::parse(const std::string& input, bool skip_whitespace) con
         }
 
         if (max_match == 0) {
-            throw std::runtime_error("No match found at " + cur);
+            if (is_err) {
+                err_token.value += cur[0];
+            } else {
+                is_err = true;
+                err_token = token(-1, std::string{cur[0]}, line + 1, col + 1);
+            }
+            col++;
+            cur = cur.substr(1);
+            continue;
+        }
+
+        is_err = false;
+        if (!err_token.value.empty()) {
+            tokens.emplace_back(std::move(err_token));
+            err_token = token(-1, "", -1, -1);
         }
 
         auto match_str = cur.substr(0, max_match);
@@ -63,7 +79,27 @@ lexer::tokens_t lexer::parse(const std::string& input, bool skip_whitespace) con
         max_match = 0;
     }
 
+    if (is_err) {
+        tokens.emplace_back(std::move(err_token));
+    }
+
     return tokens;
+}
+
+std::unordered_map<int, std::string> lexer::token_names{};
+int lexer::whitespace;
+
+token::operator std::string() const {
+    if (type == -1) {
+        return value;
+    }
+    return lexer::token_names[type];
+}
+
+std::ostream& operator<<(std::ostream& os, const token& t) {
+    const std::string type = lexer::token_names.contains(t.type) ? lexer::token_names[t.type] : std::to_string(t.type);
+    os << "Token(" << type << ", \"" << t.value << "\", line: " << t.line << ", column: " << t.column << ")";
+    return os;
 }
 
 } // namespace lexer

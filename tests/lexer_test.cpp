@@ -1,4 +1,6 @@
 #include "lexer/lexer.hpp"
+
+#include <format>
 #include <gtest/gtest.h>
 
 enum class token_type {
@@ -70,10 +72,6 @@ protected:
             EXPECT_EQ(tokens[i].value, expected[i].second) << " at index " << i;
         }
     }
-
-    void except_fail(const std::string& input) const {
-        EXPECT_ANY_THROW(auto res = lex.parse(input));
-    }
 };
 
 TEST_F(lexer_tests, recognizes_keywords) {
@@ -113,7 +111,7 @@ TEST_F(lexer_tests, real_number_without_fraction_is_accepted) {
 }
 
 TEST_F(lexer_tests, real_number_without_integer_is_rejected) {
-    except_fail(".123");
+    expect_tokens(".123", {{static_cast<token_type>(-1), "."}, {token_type::INTNUM, "123"}});
 }
 
 TEST_F(lexer_tests, compound_expression_with_mixed_tokens) {
@@ -130,4 +128,8 @@ TEST_F(lexer_tests, input_with_only_whitespace) {
 
 TEST_F(lexer_tests, handles_long_mixed_input) {
     expect_tokens("int x = 1; if (x >= 10) { x = x + 1; } else { x = 0; }", {{token_type::INT, "int"}, {token_type::ID, "x"}, {token_type::ASSIGN, "="}, {token_type::INTNUM, "1"}, {token_type::SEMI, ";"}, {token_type::IF, "if"}, {token_type::LPAR, "("}, {token_type::ID, "x"}, {token_type::GE, ">="}, {token_type::INTNUM, "10"}, {token_type::RPAR, ")"}, {token_type::LBRACE, "{"}, {token_type::ID, "x"}, {token_type::ASSIGN, "="}, {token_type::ID, "x"}, {token_type::PLUS, "+"}, {token_type::INTNUM, "1"}, {token_type::SEMI, ";"}, {token_type::RBRACE, "}"}, {token_type::ELSE, "else"}, {token_type::LBRACE, "{"}, {token_type::ID, "x"}, {token_type::ASSIGN, "="}, {token_type::INTNUM, "0"}, {token_type::SEMI, ";"}, {token_type::RBRACE, "}"}});
+}
+
+TEST_F(lexer_tests, handles_error_at_end_of_input) {
+    expect_tokens("int i = 1; i = .",{{token_type::INT, "int"}, {token_type::ID, "i"}, {token_type::ASSIGN, "="}, {token_type::INTNUM, "1"}, {token_type::SEMI, ";"}, {token_type::ID, "i"}, {token_type::ASSIGN, "="}, {static_cast<token_type>(-1), "."}});
 }

@@ -45,6 +45,8 @@ struct token {
     explicit token(std::string value) : type(-1), value(std::move(value)), line(0), column(0) {}
 
     explicit operator std::string() const;
+
+    friend std::ostream& operator<<(std::ostream& os, const token& t);
 };
 
 class lexer {
@@ -76,21 +78,6 @@ public:
 private:
     std::vector<keyword_t> key_words;
 };
-
-inline std::unordered_map<int, std::string> lexer::token_names{};
-inline int lexer::whitespace;
-
-inline token::operator std::string() const {
-    if (type == -1) {
-        return value;
-    }
-    return lexer::token_names[type];
-}
-
-inline std::ostream& operator<<(std::ostream& os, const token& t) {
-    os << "Token(" << lexer::token_names.at(t.type) << ", \"" << t.value << "\", line: " << t.line << ", column: " << t.column << ")";
-    return os;
-}
 
 } // namespace lexer
 
