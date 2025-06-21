@@ -1,0 +1,116 @@
+[
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\grammar\\LL1.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\LL1.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\grammar\\LL1.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\grammar\\LL1.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\grammar\\LR1.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\LR1.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\grammar\\LR1.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\grammar\\LR1.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\grammar\\SLR.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\SLR.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\grammar\\SLR.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\grammar\\SLR.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\grammar\\exception.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\exception.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\grammar\\exception.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\grammar\\exception.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\grammar\\grammar_base.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\grammar_base.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\grammar\\grammar_base.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\grammar\\grammar_base.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\grammar\\production.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\production.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\grammar\\production.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\grammar\\production.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\grammar\\tree.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\tree.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\grammar\\tree.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\grammar\\tree.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\lexer\\lexer.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\lexer\\lexer.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\lexer\\lexer.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\lexer\\lexer.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\main.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\main.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\main.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\main.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\regex\\dfa.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\dfa.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\regex\\dfa.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\regex\\dfa.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\regex\\exception.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\exception.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\regex\\exception.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\regex\\exception.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\regex\\regex.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\regex.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\regex\\regex.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\regex\\regex.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\regex\\token.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\token.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\regex\\token.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\regex\\token.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\regex\\token_type.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\token_type.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\regex\\token_type.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\regex\\token_type.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\regex\\tree.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\tree.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\regex\\tree.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\regex\\tree.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\semantic\\sema.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\semantic\\sema.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\semantic\\sema.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\semantic\\sema.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\semantic\\sema_production.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\semantic\\sema_production.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\semantic\\sema_production.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\semantic\\sema_production.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\semantic\\sema_tree.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\semantic\\sema_tree.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\semantic\\sema_tree.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\semantic\\sema_tree.cpp.obj"
+},
+{
+  "directory": "D:/code/Cpp/compiler/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\src\\utils.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\utils.cpp",
+  "file": "D:\\code\\Cpp\\compiler\\src\\utils.cpp",
+  "output": "CMakeFiles\\compiler.dir\\src\\utils.cpp.obj"
+}
+]
