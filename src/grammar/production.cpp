@@ -17,7 +17,7 @@ symbol::symbol() {
 }
 
 symbol::symbol(const std::string& str) {
-    auto trimed = trim(str);
+    const auto trimed = trim(str);
 
     if (str == epsilon_str) {
         type = type::epsilon;

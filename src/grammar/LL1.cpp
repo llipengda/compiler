@@ -42,12 +42,19 @@ void LL1::parse(const std::vector<lexer::token>& input) {
     std::size_t pos = 0;
 
     while (pos < in.size() || !stack.empty()) {
-        auto cur_input = production::symbol{in[pos]};
-        auto& top = stack.top();
-
-        auto get_pos = [&]() {
+        auto get_pos = [&] {
             return "at line " + std::to_string(in[pos].line) + ", column " + std::to_string(in[pos].column);
         };
+
+        auto cur_input = production::symbol{in[pos]};
+        if (stack.empty()) {
+            std::cerr << "unknown token: " << cur_input << ' ' << get_pos() << '\n';
+            pos++;
+            continue;
+        }
+        auto& top = stack.top();
+
+
 
         if (top.is_terminal() || top.is_end_mark()) {
             if (top == cur_input) {
@@ -67,7 +74,11 @@ void LL1::parse(const std::vector<lexer::token>& input) {
                 } else if (!follow.at(top).contains(cur_input)) {
                     pos++;
                 } else {
-                    throw exception::grammar_error("Unexpected token: " + cur_input.name + ' ' + get_pos());
+                    if (!stack.empty()) {
+                        stack.pop();
+                    } else {
+                        pos++;
+                    }
                 }
                 std::cerr << "Unexpected token: " << cur_input.name << ' ' << get_pos() << '\n';
                 continue;

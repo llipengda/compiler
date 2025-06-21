@@ -37,7 +37,19 @@ void tree::add(const production::production& prod) {
     }
     assert(next != nullptr);
     assert(next->children.empty());
-    assert(*next->symbol == prod.lhs);
+
+    if (*next->symbol != prod.lhs) {
+        visit([&](auto&& node) {
+            if (!node->children.empty()) {
+                return;
+            }
+            if (*node->symbol == prod.lhs) {
+                next = node;
+            }
+        });
+        assert(*next->symbol == prod.lhs);
+    }
+
     bool found = false;
     std::shared_ptr<tree_node> new_next = nullptr;
     std::vector<std::shared_ptr<production::symbol>> tmp;
