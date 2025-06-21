@@ -2,12 +2,12 @@
 set -e  
 set -x  
 
-BUILD_DIR=build
+BUILD_DIR=build/coverage
 rm -rf $BUILD_DIR
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR
 
-cmake .. -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON
+cmake ../.. -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON
 
 cmake --build .
 
@@ -19,7 +19,7 @@ lcov --capture \
      --rc branch_coverage=1 \
      --ignore-errors mismatch
 
-lcov --remove coverage.info '/usr/*' '*/_deps/*' \
+lcov --remove coverage.info '/usr/*' '*/_deps/*' '*/tests/*' \
      --output-file coverage_filtered.info \
      --rc branch_coverage=1
 
