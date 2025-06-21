@@ -1,3 +1,0 @@
-D:/code/Cpp/compiler/build/CMakeFiles/compiler.dir
-D:/code/Cpp/compiler/build/CMakeFiles/edit_cache.dir
-D:/code/Cpp/compiler/build/CMakeFiles/rebuild_cache.dir
