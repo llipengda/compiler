@@ -6,7 +6,7 @@
 #include "grammar_base.hpp"
 #include "production.hpp"
 
-#ifdef SHOW_DEBUG
+#ifdef DEBUG
 #include "utils.hpp"
 #endif
 
@@ -155,7 +155,7 @@ SLR<Production>::SLR(const std::vector<production::production>& productions_) {
         symbol_map[prod.lhs].push_back(i);
     }
 
-#ifdef SHOW_DEBUG
+#ifdef DEBUG
     std::cout << "Grammar:\n";
     for (const auto& prod : productions) {
         std::cout << prod << std::endl;
@@ -175,7 +175,7 @@ SLR<Production>::SLR(const std::string& str) {
         symbol_map[prod.lhs].push_back(i);
     }
 
-#ifdef SHOW_DEBUG
+#ifdef DEBUG
     std::cout << "Grammar:\n";
     for (const auto& prod : productions) {
         std::cout << prod << std::endl;
@@ -188,7 +188,7 @@ void SLR<Production>::build() {
     calc_first();
     calc_follow();
     build_items_set();
-#ifdef SHOW_DEBUG
+#ifdef DEBUG
     print_items_set();
     print_tables();
 #endif
@@ -218,7 +218,7 @@ void SLR<Production>::parse(const std::vector<lexer::token>& input) {
         }
         auto act = row[cur_input];
 
-#ifdef SHOW_DEBUG
+#ifdef DEBUG
         std::cout << "------------------------\n";
         std::cout << "stack: \n";
         utils::println(stack);
@@ -258,7 +258,7 @@ void SLR<Production>::parse(const std::vector<lexer::token>& input) {
             stack.push(new_state);
             output.emplace_back(prod);
             steps.add(prod, in.size() - pos);
-#ifdef SHOW_DEBUG
+#ifdef DEBUG
             std::cout << prod << '\n';
 #endif
         } else {

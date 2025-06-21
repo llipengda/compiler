@@ -58,12 +58,16 @@ regex_tree::regex_tree(regex_node& root)
     : root(&root) {}
 
 regex_tree::regex_tree(const std::string& s) {
-    auto ss = token::split(s);
-#ifdef SHOW_DEBUG
+    if (s.empty()) {
+        return;
+    }
+
+    const auto ss = token::split(s);
+#ifdef DEBUG
     ::regex::token::print(ss);
 #endif
-    auto postfix = token::to_postfix(ss);
-#ifdef SHOW_DEBUG
+    const auto postfix = token::to_postfix(ss);
+#ifdef DEBUG
     ::regex::token::print(postfix);
 #endif
 
@@ -123,18 +127,15 @@ regex_tree::regex_tree(const std::string& s) {
 
     visit([&](regex_node& node) {
         if (node.type == regex_node::type::concat) {
-            auto& concat_node = node.as<tree::concat_node>();
-            for (auto idx : concat_node.left->lastpos) {
+            for (const auto& concat_node = node.as<tree::concat_node>(); auto idx : concat_node.left->lastpos) {
                 followpos[idx].insert(concat_node.right->firstpos.begin(), concat_node.right->firstpos.end());
             }
         } else if (node.type == regex_node::type::star) {
-            auto& star_node = node.as<tree::star_node>();
-            for (auto idx : star_node.lastpos) {
+            for (auto& star_node = node.as<tree::star_node>(); auto idx : star_node.lastpos) {
                 followpos[idx].insert(star_node.firstpos.begin(), star_node.firstpos.end());
             }
         } else if (node.type == regex_node::type::plus) {
-            auto& plus_node = node.as<tree::plus_node>();
-            for (auto idx : plus_node.lastpos) {
+            for (auto& plus_node = node.as<tree::plus_node>(); auto idx : plus_node.lastpos) {
                 followpos[idx].insert(plus_node.firstpos.begin(), plus_node.firstpos.end());
             }
         }

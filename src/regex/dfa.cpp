@@ -11,17 +11,17 @@ dfa::dfa(const tree::regex_tree& tree) {
 }
 
 dfa::dfa(const std::string& regex) {
-    tree::regex_tree tree(regex);
-#ifdef SHOW_DEBUG
+    const tree::regex_tree tree(regex);
+#ifdef DEBUG
     tree.print();
 #endif
     init(tree);
-#ifdef SHOW_DEBUG
+#ifdef DEBUG
     this->print();
 #endif
 }
 
-void dfa::add_transition(state_t from, const token_t& token, state_t to) {
+void dfa::add_transition(const state_t from, const token_t& token, const state_t to) {
     transitions[from][token] = to;
 }
 
@@ -106,9 +106,15 @@ void dfa::print() const {
 }
 
 void dfa::init(const tree::regex_tree& tree) {
+    if (!tree.root) {
+        accept_states.insert(1);
+        return;
+    }
+
+
     std::unordered_set<d_state_t, d_state_t_hash> d_states;
     size_t cur = 1;
-    d_states.insert({std::unordered_set<state_t>(tree.root->firstpos.begin(), tree.root->firstpos.end()), cur++});
+    d_states.insert({std::unordered_set(tree.root->firstpos.begin(), tree.root->firstpos.end()), cur++});
     std::unordered_set<d_state_t, d_state_t_hash> unmarked_d_states = d_states;
 
     std::unordered_set<token_t, token_t_hash> all_tokens;
@@ -120,7 +126,7 @@ void dfa::init(const tree::regex_tree& tree) {
     auto& followpos = tree.followpos;
 
     while (!unmarked_d_states.empty()) {
-        auto d_state = *unmarked_d_states.begin();
+        auto [states, id] = *unmarked_d_states.begin();
         unmarked_d_states.erase(unmarked_d_states.begin());
 
         for (const auto& token : all_tokens) {
@@ -130,7 +136,7 @@ void dfa::init(const tree::regex_tree& tree) {
 
             d_state_t u;
             for (auto i : token_map.at(token)) {
-                if (d_state.states.contains(i)) {
+                if (states.contains(i)) {
                     u.states.insert(followpos.at(i).begin(), followpos.at(i).end());
                 }
             }
@@ -151,7 +157,7 @@ void dfa::init(const tree::regex_tree& tree) {
                 accept_states.insert(u.id);
             }
 
-            add_transition(d_state.id, token, u.id);
+            add_transition(id, token, u.id);
         }
     }
 }

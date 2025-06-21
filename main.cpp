@@ -144,6 +144,7 @@ std::string trim_zero(std::string s) {
         s.pop_back();
     }
     return s;
+
 }
 
 int main() {
