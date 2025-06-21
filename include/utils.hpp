@@ -55,7 +55,6 @@ void println(T&& t);
 
 } // namespace utils
 
-
 #pragma region tpp
 namespace utils {
 
@@ -90,6 +89,15 @@ void print(std::ostream& os, const std::stack<T>& st) {
     for (const auto& elem : elements) {
         os << elem << " ";
     }
+}
+
+template <typename T,
+          std::enable_if_t<
+              std::is_arithmetic_v<std::decay_t<T>>
+                  || std::is_same_v<std::decay_t<T>, std::string>,
+              int> = 0>
+void print(std::ostream& os, T&& v) {
+    os << v;
 }
 
 template <typename T>

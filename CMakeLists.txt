@@ -6,6 +6,22 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_TLS_VERIFY OFF)
 
+option(CODE_COVERAGE "Enable coverage reporting" OFF)
+option(SEMA_PROD_USE_INITIALIZER_LIST "Use initializer list for sema production" OFF)
+option(USE_STD_REGEX "Use std::regex for lexer" OFF)
+option(DEBUG "Enable debug mode" OFF)
+
+if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    message(STATUS "Code coverage enabled")
+    add_compile_options(--coverage -O0 -g)
+    add_link_options(--coverage)
+
+    if(NOT DEBUG)
+        set(DEBUG ON CACHE BOOL "Enable debug mode" FORCE)
+        message(STATUS "DEBUG automatically enabled because CODE_COVERAGE is ON")
+    endif()
+endif()
+
 # ---- Fetch GoogleTest ----
 include(FetchContent)
 FetchContent_Declare(
@@ -25,9 +41,9 @@ add_library(compiler_lib STATIC ${LIB_SOURCES})
 target_include_directories(compiler_lib PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 target_compile_definitions(compiler_lib PUBLIC
-        # SEMA_PROD_USE_INITIALIZER_LIST
-        # USE_STD_REGEX
-        # DEBUG
+    $<$<BOOL:${SEMA_PROD_USE_INITIALIZER_LIST}>:SEMA_PROD_USE_INITIALIZER_LIST>
+    $<$<BOOL:${USE_STD_REGEX}>:USE_STD_REGEX>
+    $<$<BOOL:${DEBUG}>:DEBUG>
 )
 
 # ---- 主程序 compiler ----

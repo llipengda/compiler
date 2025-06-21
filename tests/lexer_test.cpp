@@ -1,6 +1,5 @@
 #include "lexer/lexer.hpp"
 
-#include <format>
 #include <gtest/gtest.h>
 
 enum class token_type {
@@ -131,5 +130,5 @@ TEST_F(lexer_tests, handles_long_mixed_input) {
 }
 
 TEST_F(lexer_tests, handles_error_at_end_of_input) {
-    expect_tokens("int i = 1; i = .",{{token_type::INT, "int"}, {token_type::ID, "i"}, {token_type::ASSIGN, "="}, {token_type::INTNUM, "1"}, {token_type::SEMI, ";"}, {token_type::ID, "i"}, {token_type::ASSIGN, "="}, {static_cast<token_type>(-1), "."}});
+    expect_tokens("int i = 1; i = .", {{token_type::INT, "int"}, {token_type::ID, "i"}, {token_type::ASSIGN, "="}, {token_type::INTNUM, "1"}, {token_type::SEMI, ";"}, {token_type::ID, "i"}, {token_type::ASSIGN, "="}, {static_cast<token_type>(-1), "."}});
 }

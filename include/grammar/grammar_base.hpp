@@ -33,6 +33,8 @@ protected:
     void calc_follow();
     bool calc_follow(std::size_t pos);
     symbol_set calc_first(const production::production& prod) const;
+    void print_first() const;
+    void print_follow() const;
 };
 } // namespace grammar
 

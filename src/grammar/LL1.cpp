@@ -99,39 +99,6 @@ void LL1::parse(const std::vector<lexer::token>& input) {
     }
 }
 
-void LL1::print_first() const {
-    std::cout << "FIRST sets:\n";
-    for (const auto& [sym, first_set] : first) {
-        if (sym.is_terminal()) {
-            continue;
-        }
-        std::cout << "FIRST(" << sym << ") = {";
-        for (auto it = first_set.begin(); it != first_set.end(); ++it) {
-            std::cout << *it;
-            if (std::next(it) != first_set.end()) {
-                std::cout << ',';
-            }
-        }
-        std::cout << "}\n";
-    }
-    std::cout << '\n';
-}
-
-void LL1::print_follow() const {
-    std::cout << "FOLLOW sets:\n";
-    for (const auto& [sym, follow_set] : follow) {
-        std::cout << "FOLLOW(" << sym << ") = {";
-        for (auto it = follow_set.begin(); it != follow_set.end(); ++it) {
-            std::cout << *it;
-            if (std::next(it) != follow_set.end()) {
-                std::cout << ',';
-            }
-        }
-        std::cout << "}\n";
-    }
-    std::cout << '\n';
-}
-
 void LL1::print_productions() const {
     std::cout << "Productions:\n";
     for (const auto& prod : productions) {

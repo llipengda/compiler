@@ -18,8 +18,6 @@ public:
 
     void build() override;
     void parse(const std::vector<lexer::token>& input) override;
-    void print_first() const;
-    void print_follow() const;
     void print_productions() const;
     void print_parsing_table() const;
     void print_parsing_table_pretty() const;

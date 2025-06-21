@@ -168,7 +168,7 @@ SLR<Production>::SLR(const std::string& str) {
     productions = production::production::parse(str);
 
     const auto& first_prod = productions[0];
-    productions.emplace(productions.begin(), first_prod.lhs.name + '\'' + " -> " + first_prod.lhs.name);
+    productions.emplace(productions.begin(), first_prod.lhs.name + "<1>" + " -> " + first_prod.lhs.name);
 
     for (std::size_t i = 0; i < productions.size(); ++i) {
         const auto& prod = productions[i];

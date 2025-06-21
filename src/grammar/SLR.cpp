@@ -34,7 +34,7 @@ action action::error(std::size_t val) {
 
 action::action() : action_type(type::error), val(-1) {}
 
-action::action(type action_type, std::size_t val) : action_type(action_type), val(val) {}
+action::action(const type action_type, const std::size_t val) : action_type(action_type), val(val) {}
 
 std::ostream& operator<<(std::ostream& os, const action& act) {
     switch (act.action_type) {

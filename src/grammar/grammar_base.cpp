@@ -16,6 +16,9 @@ void grammar_base::calc_first() {
     for (const auto& prod : productions) {
         calc_first(prod.lhs);
     }
+#ifdef DEBUG
+    print_first();
+#endif
 }
 
 grammar_base::symbol_set& grammar_base::calc_first(const production::symbol& sym) {
@@ -23,7 +26,7 @@ grammar_base::symbol_set& grammar_base::calc_first(const production::symbol& sym
         return first[sym];
     }
 
-    if (sym.is_terminal() || sym.is_epsilon()) {
+    if (sym.is_terminal() || sym.is_end_mark()) {
         first[sym] = {sym};
         return first[sym];
     }
@@ -74,6 +77,10 @@ void grammar_base::calc_follow() {
     for (auto &follow_set: follow | std::views::values) {
         follow_set.erase(production::symbol::epsilon);
     }
+
+#ifdef DEBUG
+    print_follow();
+#endif
 }
 
 bool grammar_base::calc_follow(const std::size_t pos) {
@@ -131,6 +138,39 @@ grammar_base::symbol_set grammar_base::calc_first(const production::production& 
         }
     }
     return result;
+}
+
+void grammar_base::print_first() const {
+    std::cout << "FIRST sets:\n";
+    for (const auto& [sym, first_set] : first) {
+        if (sym.is_terminal()) {
+            continue;
+        }
+        std::cout << "FIRST(" << sym << ") = {";
+        for (auto it = first_set.begin(); it != first_set.end(); ++it) {
+            std::cout << *it;
+            if (std::next(it) != first_set.end()) {
+                std::cout << ',';
+            }
+        }
+        std::cout << "}\n";
+    }
+    std::cout << '\n';
+}
+
+void grammar_base::print_follow() const {
+    std::cout << "FOLLOW sets:\n";
+    for (const auto& [sym, follow_set] : follow) {
+        std::cout << "FOLLOW(" << sym << ") = {";
+        for (auto it = follow_set.begin(); it != follow_set.end(); ++it) {
+            std::cout << *it;
+            if (std::next(it) != follow_set.end()) {
+                std::cout << ',';
+            }
+        }
+        std::cout << "}\n";
+    }
+    std::cout << '\n';
 }
 
 } // namespace grammar

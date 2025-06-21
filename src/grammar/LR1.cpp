@@ -26,15 +26,14 @@ std::unordered_set<production::symbol> LR1::expand_item_set(const std::unordered
             if (item.symbol_after_dot() != sym) {
                 return;
             }
-            auto first = item.rhs.begin() + item.dot_pos + 1;
+            const auto first = item.rhs.begin() + item.dot_pos + 1;
             if (first == item.rhs.end()) {
                 lookaheads.emplace_back(item.lookahead);
                 return;
             }
             std::vector<production::symbol> rhs{first, item.rhs.end()};
             rhs.emplace_back(item.lookahead);
-            auto res = calc_first(rhs);
-            for (const auto& r : res) {
+            for (const auto res = calc_first(rhs); const auto& r : res) {
                 if (!r.is_epsilon() && !lookahead_set.contains(r)) {
                     lookaheads.emplace_back(r);
                     lookahead_set.insert(r);
