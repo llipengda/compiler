@@ -7,9 +7,9 @@ rm -rf $BUILD_DIR
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR
 
-cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON
 
-ninja -j$(nproc)
+cmake --build .
 
 ctest
 

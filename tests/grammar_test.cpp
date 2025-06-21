@@ -1,22 +1,17 @@
 #include "grammar/grammar.hpp"
 #include "utils.hpp"
+
 #include <gtest/gtest.h>
 
 using grammar_types = ::testing::Types<grammar::LL1, grammar::SLR<>, grammar::LR1>;
 
 template <typename Grammar>
-class grammar_test_add : public ::testing::Test {
+class grammar_test_base : public ::testing::Test {
 protected:
     Grammar parser;
-
-    grammar_test_add() : parser(R"(
-E -> T E'
-E' -> + T E' | ε
-T -> id
-)") {
+    explicit grammar_test_base(const std::string& grammar) : parser(grammar) {
         parser.build();
     }
-
     static std::vector<lexer::token> simple_lexer(const std::string& input) {
         std::vector<lexer::token> tokens;
         for (const auto& c : utils::split_trim(input, " ")) {
@@ -26,7 +21,6 @@ T -> id
         }
         return tokens;
     }
-
     void expect_parse(const std::string& input, const std::vector<std::string>& expected) {
         const auto tokens = simple_lexer(input);
         parser.parse(tokens);
@@ -35,10 +29,8 @@ T -> id
         tree->visit([&preorder](auto&& node) {
             preorder.push_back(node->symbol->lexval);
         });
-
         ASSERT_EQ(preorder, expected);
     }
-
     void expect_parse_fail(const std::string& input) {
         testing::internal::CaptureStderr();
         const auto tokens = simple_lexer(input);
@@ -51,6 +43,16 @@ T -> id
         const auto& err = testing::internal::GetCapturedStderr();
         ASSERT_TRUE(e || !err.empty());
     }
+};
+
+template <typename Grammar>
+class grammar_test_add : public grammar_test_base<Grammar> {
+public:
+    grammar_test_add() : grammar_test_base<Grammar>(R"(
+E -> T E'
+E' -> + T E' | ε
+T -> id
+)") {}
 };
 
 TYPED_TEST_SUITE(grammar_test_add, grammar_types);
@@ -76,54 +78,15 @@ TYPED_TEST(grammar_test_add, fails_on_unexpected_token) {
 }
 
 template <typename Grammar>
-class grammar_test_expr : public ::testing::Test {
-protected:
-    Grammar parser;
-
-    grammar_test_expr() : parser(R"(
+class grammar_test_expr : public grammar_test_base<Grammar> {
+public:
+    grammar_test_expr() : grammar_test_base<Grammar>(R"(
 E  -> T E'
 E' -> + T E' | - T E' | ε
 T  -> F T'
 T' -> * F T' | / F T' | ε
 F  -> ( E ) | id
-)") {
-        parser.build();
-    }
-
-    static std::vector<lexer::token> simple_lexer(const std::string& input) {
-        std::vector<lexer::token> tokens;
-        for (const auto& c : utils::split_trim(input, " ")) {
-            if (!c.empty()) {
-                tokens.emplace_back(c);
-            }
-        }
-        return tokens;
-    }
-
-    void expect_parse(const std::string& input, const std::vector<std::string>& expected) {
-        const auto tokens = simple_lexer(input);
-        parser.parse(tokens);
-        const auto tree = parser.get_tree();
-        std::vector<std::string> preorder;
-        tree->visit([&preorder](auto&& node) {
-            preorder.push_back(node->symbol->lexval);
-        });
-
-        ASSERT_EQ(preorder, expected);
-    }
-
-    void expect_parse_fail(const std::string& input) {
-        testing::internal::CaptureStderr();
-        const auto tokens = simple_lexer(input);
-        bool e = false;
-        try {
-            parser.parse(tokens);
-        } catch (...) {
-            e = true;
-        }
-        const auto& err = testing::internal::GetCapturedStderr();
-        ASSERT_TRUE(e || !err.empty());
-    }
+)") {}
 };
 
 TYPED_TEST_SUITE(grammar_test_expr, grammar_types);
@@ -183,48 +146,9 @@ simpleexpr ->  ID  |  NUM  |  ( arithexpr )
 }
 
 template <typename Grammar>
-class grammar_test_program : public ::testing::Test {
-protected:
-    Grammar parser;
-
-    grammar_test_program() : parser(get_gram()) {
-        parser.build();
-    }
-
-    static std::vector<lexer::token> simple_lexer(const std::string& input) {
-        std::vector<lexer::token> tokens;
-        for (const auto& c : utils::split_trim(input, " ")) {
-            if (!c.empty()) {
-                tokens.emplace_back(c);
-            }
-        }
-        return tokens;
-    }
-
-    void expect_parse(const std::string& input, const std::vector<std::string>& expected) {
-        const auto tokens = simple_lexer(input);
-        parser.parse(tokens);
-        const auto tree = parser.get_tree();
-        std::vector<std::string> preorder;
-        tree->visit([&preorder](auto&& node) {
-            preorder.push_back(node->symbol->lexval);
-        });
-
-        ASSERT_EQ(preorder, expected);
-    }
-
-    void expect_parse_fail(const std::string& input) {
-        testing::internal::CaptureStderr();
-        const auto tokens = simple_lexer(input);
-        bool e = false;
-        try {
-            parser.parse(tokens);
-        } catch (...) {
-            e = true;
-        }
-        const auto& err = testing::internal::GetCapturedStderr();
-        ASSERT_TRUE(e || !err.empty());
-    }
+class grammar_test_program : public grammar_test_base<Grammar> {
+public:
+    grammar_test_program() : grammar_test_base<Grammar>(get_gram()) {}
 };
 
 TYPED_TEST_SUITE(grammar_test_program, grammar_types);

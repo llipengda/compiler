@@ -87,7 +87,7 @@ namespace lexer {
 
 template <typename TokenType>
 lexer::lexer(const input_keywords_t<TokenType> key_words, TokenType whitespace_) {
-    static_assert(std::is_enum_v<TokenType>, "token_type must be an enum type");
+    static_assert(std::is_enum_v<TokenType> || std::is_convertible_v<TokenType, int>, "token_type must be an enum type");
     whitespace = static_cast<int>(whitespace_);
 
     for (const auto& keyword : key_words) {

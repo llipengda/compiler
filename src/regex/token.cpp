@@ -97,7 +97,8 @@ std::vector<token_type> split(const std::string& s) {
     bool in_range = false;
     char last_char_in_set = '\0';
     char_set current_set;
-    for (const char& ch : s) {
+    for (auto it = s.begin(); it != s.end(); ++it) {
+        const char& ch = *it;
         if (is_char(last) || is_symbol(last) || is_char_set(last) || is(last, op::right_par) || is(last, op::star) || is(last, op::plus)) {
             if (!in_char_set && (is_nonop(ch) || ch == '(' || ch == '\\' || ch == '[')) {
                 result.emplace_back(op::concat);
@@ -111,6 +112,36 @@ std::vector<token_type> split(const std::string& s) {
                 current_set = char_set{};
             } else if (ch == '-') {
                 in_range = true;
+            } else if (ch == '\\') {
+                ++it;
+                if (it == s.end()) {
+                    throw regex::invalid_regex_exception("Unmatched escape in char set");
+                }
+                char esc = *it;
+                char real_ch;
+                switch (esc) {
+                case 'n': real_ch = '\n'; break;
+                case 't': real_ch = '\t'; break;
+                case 'r': real_ch = '\r'; break;
+                case 'f': real_ch = '\f'; break;
+                case 'v': real_ch = '\v'; break;
+                case 'a': real_ch = '\a'; break;
+                case '0': real_ch = '\0'; break;
+                case '\\': real_ch = '\\'; break;
+                case '-': real_ch = '-'; break;
+                case '[': real_ch = '['; break;
+                case ']': real_ch = ']'; break;
+                default:
+                    throw regex::unknown_character_exception(std::string{"[\\"} + esc + "]");
+                }
+                if (in_range) {
+                    in_range = false;
+                    current_set.add(last_char_in_set, real_ch);
+                } else {
+                    current_set.add(real_ch);
+                }
+                last_char_in_set = real_ch;
+                continue;
             } else if (in_range) {
                 in_range = false;
                 current_set.add(last_char_in_set, ch);
@@ -119,7 +150,7 @@ std::vector<token_type> split(const std::string& s) {
             } else {
                 current_set.add(ch);
             }
-            if (!in_range) {
+            if (!in_range && ch != '\\') {
                 last_char_in_set = ch;
             }
             continue;

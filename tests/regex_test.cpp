@@ -114,3 +114,20 @@ TEST_F(regex_tests, match_max_with_negated_char_class) {
     EXPECT_EQ(re.match_max("a123"), 0);    // starts with a
 }
 
+TEST_F(regex_tests, escaped_characters_in_pattern) {
+    const auto re = regex::regex("a\\.b");
+    EXPECT_TRUE(re.match("a.b"));
+    EXPECT_FALSE(re.match("ab"));
+    EXPECT_FALSE(re.match("a\\b"));
+}
+
+TEST_F(regex_tests, escaped_characters_in_char_set) {
+    const auto re = regex::regex("[a.\tb\\]]");
+    EXPECT_TRUE(re.match("a"));
+    EXPECT_TRUE(re.match("."));
+    EXPECT_TRUE(re.match("b"));
+    EXPECT_TRUE(re.match("\t"));
+    EXPECT_TRUE(re.match("]"));
+    EXPECT_FALSE(re.match("c"));
+    EXPECT_FALSE(re.match("ab"));
+}
