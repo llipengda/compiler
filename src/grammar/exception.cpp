@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "grammar/exception.hpp"
 
 namespace grammar::exception {
@@ -12,7 +14,7 @@ const char* ambiguous_grammar_exception::what() const noexcept {
     return msg.c_str();
 }
 
-grammar_error::grammar_error(const std::string& message) : msg(message) {}
+grammar_error::grammar_error(std::string message) : msg(std::move(message)) {}
 
 const char* grammar_error::what() const noexcept {
     return msg.c_str();

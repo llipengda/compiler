@@ -16,7 +16,7 @@ public:
 private:
     void init_first_item_set() override;
     std::unordered_set<production::symbol> expand_item_set(const std::unordered_set<production::symbol>& symbols, items_t& current_item_set, const std::unordered_set<production::symbol>& after_dot) override;
-    void build_acc_and_reduce(const items_t& current_items, const std::size_t idx) override;
+    void build_acc_and_reduce(const items_t& current_items, std::size_t idx) override;
 };
 
 } // namespace grammar

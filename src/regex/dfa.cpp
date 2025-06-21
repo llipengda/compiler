@@ -1,6 +1,7 @@
 #include "regex/dfa.hpp"
 
 #include <iostream>
+#include <ranges>
 #include <unordered_map>
 
 namespace regex::dfa {
@@ -28,10 +29,10 @@ bool dfa::match(const std::string& str) const {
     state_t current_state = 1;
     for (const auto& ch : str) {
         bool find = false;
-        if (!transitions.count(current_state)) {
+        if (!transitions.contains(current_state)) {
             return false;
         }
-        if (transitions.at(current_state).count(ch)) {
+        if (transitions.at(current_state).contains(ch)) {
             current_state = transitions.at(current_state).at(ch);
             continue;
         }
@@ -46,7 +47,7 @@ bool dfa::match(const std::string& str) const {
             return false;
         }
     }
-    return accept_states.count(current_state) > 0;
+    return accept_states.contains(current_state);
 }
 
 std::size_t dfa::match_max(const std::string& str) const {
@@ -57,11 +58,11 @@ std::size_t dfa::match_max(const std::string& str) const {
         char ch = str[i];
         bool find = false;
 
-        if (!transitions.count(current_state)) {
+        if (!transitions.contains(current_state)) {
             break;
         }
 
-        if (transitions.at(current_state).count(ch)) {
+        if (transitions.at(current_state).contains(ch)) {
             current_state = transitions.at(current_state).at(ch);
             find = true;
         } else {
@@ -78,7 +79,7 @@ std::size_t dfa::match_max(const std::string& str) const {
             break;
         }
 
-        if (accept_states.count(current_state)) {
+        if (accept_states.contains(current_state)) {
             last_accept_pos = i + 1;
         }
     }
@@ -111,8 +112,8 @@ void dfa::init(const tree::regex_tree& tree) {
     std::unordered_set<d_state_t, d_state_t_hash> unmarked_d_states = d_states;
 
     std::unordered_set<token_t, token_t_hash> all_tokens;
-    for (const auto& token : tree.token_map) {
-        all_tokens.insert(token.first);
+    for (const auto& key : tree.token_map | std::views::keys) {
+        all_tokens.insert(key);
     }
 
     auto& token_map = tree.token_map;
@@ -129,7 +130,7 @@ void dfa::init(const tree::regex_tree& tree) {
 
             d_state_t u;
             for (auto i : token_map.at(token)) {
-                if (d_state.states.count(i)) {
+                if (d_state.states.contains(i)) {
                     u.states.insert(followpos.at(i).begin(), followpos.at(i).end());
                 }
             }
@@ -138,8 +139,7 @@ void dfa::init(const tree::regex_tree& tree) {
                 continue;
             }
 
-            auto it = d_states.find(u);
-            if (it == d_states.end()) {
+            if (auto it = d_states.find(u); it == d_states.end()) {
                 u.id = cur++;
                 d_states.insert(u);
                 unmarked_d_states.insert(u);
@@ -147,7 +147,7 @@ void dfa::init(const tree::regex_tree& tree) {
                 u.id = it->id;
             }
 
-            if (u.states.count(*token_map.at(token::symbol::end_mark).begin())) {
+            if (u.states.contains(*token_map.at(token::symbol::end_mark).begin())) {
                 accept_states.insert(u.id);
             }
 

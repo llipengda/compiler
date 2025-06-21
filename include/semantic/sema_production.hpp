@@ -4,10 +4,8 @@
 
 #include "grammar/production.hpp"
 
-#include <cassert>
 #include <functional>
 #include <memory>
-#include <ostream>
 #include <unordered_map>
 
 namespace semantic {
@@ -19,7 +17,7 @@ public:
     sema_symbol();
     sema_symbol(const std::string& str);
 #if __cplusplus >= 201703L
-    sema_symbol(const std::string_view str);
+    sema_symbol(std::string_view str);
 #endif
     sema_symbol(const char* str);
 
@@ -50,7 +48,7 @@ public:
     void error(const std::string& msg);
     sema_symbol& symbol(const std::string& name);
     void enter_symbol_scope();
-    void add_symbol(std::shared_ptr<sema_symbol> sym);
+    void add_symbol(const std::shared_ptr<sema_symbol>& sym);
     void exit_symbol_scope();
 };
 
@@ -69,8 +67,8 @@ public:
         bool is_symbol;
         bool is_action;
 
-        rhs_value_t(const symbol& sym);
-        rhs_value_t(const action& act);
+        rhs_value_t(symbol sym);
+        rhs_value_t(action act);
         rhs_value_t(const char* str);
         rhs_value_t(const rhs_value_t& other);
         rhs_value_t& operator=(const rhs_value_t& other);
@@ -95,14 +93,14 @@ public:
 #else
 #if __cplusplus >= 201703L
     template <typename... Args>
-    sema_production(const std::string_view lhs_str, Args&&... rhs_values);
+    sema_production(std::string_view lhs_str, Args&&... rhs_values);
 #else
     template <typename... Args>
     sema_production(const std::string& lhs_str, Args&&... rhs_values);
 #endif
 #endif
 
-    sema_production replace(const grammar::production::symbol& sym);
+    sema_production replace(const grammar::production::symbol& sym) const;
 };
 
 #define ACT(...) semantic::sema_production::rhs_value_t([](semantic::sema_env& env) { __VA_ARGS__ })

@@ -1,6 +1,10 @@
 #include "semantic/sema_production.hpp"
 #include "utils.hpp"
 
+#include <cassert>
+#include <ranges>
+#include <utility>
+
 namespace semantic {
 
 sema_symbol::sema_symbol() = default;
@@ -35,7 +39,7 @@ void symbol_table::enter_scope_copy() {
         auto& current_scope = scopes.back();
         for (auto it = std::next(scopes.rbegin()); it != scopes.rend(); ++it) {
             for (auto& [key, value] : *it) {
-                if (!current_scope.count(key)) {
+                if (!current_scope.contains(key)) {
                     current_scope[key] = value;
                 }
             }
@@ -66,7 +70,7 @@ bool symbol_table::insert(const std::string& name, const symbol_info& info) {
         enter_scope();
     }
     auto& current_scope = scopes.back();
-    if (current_scope.find(name) != current_scope.end()) {
+    if (current_scope.contains(name)) {
         return false;
     }
     current_scope[name] = info;
@@ -75,8 +79,7 @@ bool symbol_table::insert(const std::string& name, const symbol_info& info) {
 }
 
 symbol_table::symbol_info* symbol_table::lookup(const std::string& name) {
-    for (auto it = scopes.rbegin(); it != scopes.rend(); ++it) {
-        auto& scope = *it;
+    for (auto& scope : std::ranges::reverse_view(scopes)) {
         auto found = scope.find(name);
         if (found != scope.end()) {
             return &found->second;
@@ -97,14 +100,14 @@ void sema_env::enter_symbol_scope() {
     symbols.emplace_back();
 }
 
-void sema_env::add_symbol(std::shared_ptr<sema_symbol> sym) {
+void sema_env::add_symbol(const std::shared_ptr<sema_symbol>& sym) {
     auto& back = symbols.back();
-    if (!back.count(sym->name)) {
+    if (!back.contains(sym->name)) {
         back[sym->name] = sym;
         return;
     }
     int cnt = 1;
-    for (const auto& [key, _] : back) {
+    for (const auto& key : back | std::views::keys) {
         if (utils::starts_with(key, sym->name + "<")) {
             cnt++;
         }
@@ -116,9 +119,9 @@ void sema_env::exit_symbol_scope() {
     symbols.pop_back();
 }
 
-sema_production::rhs_value_t::rhs_value_t(const symbol& sym) : sym(sym), is_symbol(true), is_action(false) {}
+sema_production::rhs_value_t::rhs_value_t(symbol sym) : sym(std::move(sym)), is_symbol(true), is_action(false) {}
 
-sema_production::rhs_value_t::rhs_value_t(const action& act) : act(act), is_symbol(false), is_action(true) {}
+sema_production::rhs_value_t::rhs_value_t(action act) : act(std::move(act)), is_symbol(false), is_action(true) {}
 
 sema_production::rhs_value_t::rhs_value_t(const char* str) : rhs_value_t(symbol(str)) {}
 
@@ -177,7 +180,7 @@ std::ostream& operator<<(std::ostream& os, const sema_production::rhs_value_t& v
 
 sema_production::operator grammar::production::production() const {
     grammar::production::production prod;
-    prod.lhs = this->lhs;
+    prod.lhs = static_cast<grammar::production::symbol>(this->lhs);
     for (const auto& r : this->rhs) {
         if (r.is_symbol) {
             prod.rhs.emplace_back(r.get_symbol());
@@ -193,7 +196,7 @@ sema_production::sema_production(std::initializer_list<rhs_value_t> values)
     : lhs(values.begin()->get_symbol()), rhs(values.begin() + 1, values.end()) {}
 #endif
 
-sema_production sema_production::replace(const grammar::production::symbol& sym) {
+sema_production sema_production::replace(const grammar::production::symbol& sym) const {
     auto new_prod = *this;
     for (auto& r : new_prod.rhs) {
         if (r.is_symbol && r.get_symbol().name == sym.name) {

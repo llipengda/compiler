@@ -45,7 +45,7 @@ lexer::tokens_t lexer::parse(const std::string& input, bool skip_whitespace) con
         }
 
         auto match_str = cur.substr(0, max_match);
-        const auto lines = std::count(match_str.begin(), match_str.end(), '\n');
+        const auto lines = std::ranges::count(match_str, '\n');
         const auto last_newline = match_str.find_last_of('\n');
 
         if (!skip_whitespace || cur_token != whitespace) {

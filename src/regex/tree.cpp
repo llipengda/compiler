@@ -2,11 +2,12 @@
 #include "regex/exception.hpp"
 
 #include <stack>
+#include <utility>
 
 namespace regex::tree {
 
-char_node::char_node(const token::token_type& ch, const std::size_t number)
-    : value(ch), number(number) {
+char_node::char_node(token::token_type ch, const std::size_t number)
+    : value(std::move(ch)), number(number) {
     type = type::ch;
     nullable = false;
     firstpos.insert(number);
@@ -159,18 +160,18 @@ void regex_tree::visit(const regex_node::node_ptr_t& node, const std::function<v
     func(*node.get());
 
     if (node->type == regex_node::type::concat) {
-        auto& concat_node = node->as<tree::concat_node>();
+        const auto& concat_node = node->as<tree::concat_node>();
         visit(concat_node.left, func);
         visit(concat_node.right, func);
     } else if (node->type == regex_node::type::alt) {
-        auto& alt_node = node->as<tree::alt_node>();
+        const auto& alt_node = node->as<tree::alt_node>();
         visit(alt_node.left, func);
         visit(alt_node.right, func);
     } else if (node->type == regex_node::type::star) {
-        auto& star_node = node->as<tree::star_node>();
+        const auto& star_node = node->as<tree::star_node>();
         visit(star_node.child, func);
     } else if (node->type == regex_node::type::plus) {
-        auto& plus_node = node->as<tree::plus_node>();
+        const auto& plus_node = node->as<tree::plus_node>();
         visit(plus_node.child, func);
     }
 }
@@ -217,14 +218,13 @@ regex_tree::token_map_t regex_tree::disjoint_token_sets(const token_map_t& origi
         if (token::is(token, token::symbol::end_mark)) {
             continue;
         }
-        auto cs = token::to_char_set(token);
-        if (!cs.is_negative) {
+        if (auto cs = token::to_char_set(token); !cs.is_negative) {
             for (char ch : cs.chars) {
                 char_to_positions[ch].insert(positions.begin(), positions.end());
             }
         } else {
             for (int c = -128; c < 128; ++c) {
-                if (!cs.chars.count(static_cast<char>(c))) {
+                if (!cs.chars.contains(static_cast<char>(c))) {
                     char_to_positions[static_cast<char>(c)].insert(positions.begin(), positions.end());
                 }
             }

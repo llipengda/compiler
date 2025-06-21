@@ -11,11 +11,14 @@ namespace regex::token {
 std::size_t token_type_hash::operator()(const token_type& t) const {
     if (std::holds_alternative<char>(t)) {
         return std::hash<char>{}(std::get<char>(t));
-    } else if (std::holds_alternative<symbol>(t)) {
+    }
+    if (std::holds_alternative<symbol>(t)) {
         return std::hash<int>{}(static_cast<int>(std::get<symbol>(t)));
-    } else if (std::holds_alternative<op>(t)) {
+    }
+    if (std::holds_alternative<op>(t)) {
         return std::hash<int>{}(static_cast<int>(std::get<op>(t)));
-    } else if (std::holds_alternative<char_set>(t)) {
+    }
+    if (std::holds_alternative<char_set>(t)) {
         std::size_t hash = 0;
         const auto& set = std::get<char_set>(t);
         for (const auto& ch : set.chars) {
@@ -28,11 +31,11 @@ std::size_t token_type_hash::operator()(const token_type& t) const {
 
 int get_precedence(op opr) {
     switch (opr) {
-    case op::star: return 3;
+    case op::star:
     case op::plus: return 3;
     case op::concat: return 2;
     case op::alt: return 1;
-    case op::left_par: return 0;
+    case op::left_par:
     case op::right_par: return 0;
     case op::backslash: return -1;
     }
@@ -71,9 +74,9 @@ bool match(char c, const token_type& ch) {
     }
     if (is_char_set(ch)) {
         if (const auto& set = std::get<char_set>(ch); set.is_negative) {
-            return set.chars.find(c) == set.chars.end();
+            return !set.chars.contains(c);
         } else {
-            return set.chars.find(c) != set.chars.end();
+            return set.chars.contains(c);
         }
     }
     return false;
@@ -97,14 +100,14 @@ std::vector<token_type> split(const std::string& s) {
     for (const char& ch : s) {
         if (is_char(last) || is_symbol(last) || is_char_set(last) || is(last, op::right_par) || is(last, op::star) || is(last, op::plus)) {
             if (!in_char_set && (is_nonop(ch) || ch == '(' || ch == '\\' || ch == '[')) {
-                result.push_back(op::concat);
+                result.emplace_back(op::concat);
             }
         }
         if (in_char_set) {
             if (ch == ']') {
                 in_char_set = false;
                 last = current_set;
-                result.push_back(current_set);
+                result.emplace_back(current_set);
                 current_set = char_set{};
             } else if (ch == '-') {
                 in_range = true;
@@ -185,9 +188,9 @@ std::vector<token_type> split(const std::string& s) {
         throw regex::invalid_regex_exception("Unmatched '-' in regex");
     }
     if (!result.empty()) {
-        result.push_back(op::right_par);
-        result.push_back(op::concat);
-        result.push_back(symbol::end_mark);
+        result.emplace_back(op::right_par);
+        result.emplace_back(op::concat);
+        result.emplace_back(symbol::end_mark);
     }
     return result;
 }
@@ -198,8 +201,6 @@ std::vector<token_type> to_postfix(const std::vector<token_type>& v) {
     for (const auto& ch : v) {
         if (is_char(ch) || is_symbol(ch) || is_char_set(ch)) {
             res.push_back(ch);
-        } else if (is(ch, op::left_par)) {
-            ops.push(ch);
         } else if (is(ch, op::right_par)) {
             while (!ops.empty() && !is(ops.top(), op::left_par)) {
                 res.push_back(ops.top());
@@ -218,7 +219,7 @@ std::vector<token_type> to_postfix(const std::vector<token_type>& v) {
                 ops.pop();
             }
             ops.push(ch);
-        } else if (is(ch, op::star) || is(ch, op::plus)) {
+        } else if (is(ch, op::star) || is(ch, op::plus) || is(ch, op::left_par)) {
             ops.push(ch);
         } else {
             throw regex::unknown_character_exception(std::string{std::get<char>(ch)});
@@ -243,7 +244,7 @@ static const std::unordered_map<char, std::string> escape_map = {
 std::ostream& operator<<(std::ostream& os, const token_type& ch) {
     if (is_char(ch)) {
         char c = std::get<char>(ch);
-        if (escape_map.find(c) != escape_map.end()) {
+        if (escape_map.contains(c)) {
             os << escape_map.at(c);
         } else if (std::isprint(c)) {
             os << c;
@@ -262,7 +263,7 @@ std::ostream& operator<<(std::ostream& os, const token_type& ch) {
             is_negative = !is_negative;
             for (int i = 0; i < 128; ++i) {
                 char c = static_cast<char>(i);
-                if (set.chars.find(c) == set.chars.end()) {
+                if (!set.chars.contains(c)) {
                     new_chars.insert(c);
                 }
             }

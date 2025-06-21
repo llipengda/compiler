@@ -2,9 +2,9 @@
 
 namespace grammar {
 
-LR1::LR1(const std::vector<production::production>& productions) : SLR<production::LR1_production>(productions) {}
+LR1::LR1(const std::vector<production::production>& productions) : SLR(productions) {}
 
-LR1::LR1(const std::string& str) : SLR<production::LR1_production>(str) {}
+LR1::LR1(const std::string& str) : SLR(str) {}
 
 void LR1::init_first_item_set() {
     items_t initial_items{production::LR1_production(productions[0], production::symbol::end_mark)};
@@ -35,7 +35,7 @@ std::unordered_set<production::symbol> LR1::expand_item_set(const std::unordered
             rhs.emplace_back(item.lookahead);
             auto res = calc_first(rhs);
             for (const auto& r : res) {
-                if (!r.is_epsilon() && !lookahead_set.count(r)) {
+                if (!r.is_epsilon() && !lookahead_set.contains(r)) {
                     lookaheads.emplace_back(r);
                     lookahead_set.insert(r);
                 }
@@ -46,15 +46,13 @@ std::unordered_set<production::symbol> LR1::expand_item_set(const std::unordered
         }
         for (auto id : symbol_map[sym]) {
             auto prod = productions[id];
-            for (std::size_t i = 0; i < lookaheads.size(); ++i) {
-                const auto& lookahead = lookaheads[i];
+            for (const auto& lookahead : lookaheads) {
                 production::LR1_production lr_prod(prod, lookahead);
                 current_item_set.insert(lr_prod);
                 if (lr_prod.is_end()) {
                     continue;
                 }
-                const auto& after_dot_sym = lr_prod.symbol_after_dot();
-                if (!after_dot.count(after_dot_sym)) {
+                if (const auto& after_dot_sym = lr_prod.symbol_after_dot(); !after_dot.contains(after_dot_sym)) {
                     to_add.insert(after_dot_sym);
                 }
                 calc_lookahead(lr_prod);
@@ -68,7 +66,7 @@ void LR1::build_acc_and_reduce(const items_t& current_items, const std::size_t i
     for (const auto& item : current_items) {
         if (item.is_end()) {
             if (item.lhs == productions[0].lhs) {
-                assert(!action_table[idx].count(production::symbol::end_mark));
+                assert(!action_table[idx].contains(production::symbol::end_mark));
                 action_table[idx][production::symbol::end_mark] = action::accept();
             } else {
                 std::size_t pid = -1;
@@ -80,7 +78,7 @@ void LR1::build_acc_and_reduce(const items_t& current_items, const std::size_t i
                 }
                 assert(pid != -1);
                 auto s = item.lookahead;
-                assert(!action_table[idx].count(s));
+                assert(!action_table[idx].contains(s));
                 action_table[idx][s] = action::reduce(pid);
             }
         }

@@ -10,7 +10,7 @@ namespace regex {
 class unknown_character_exception final : public std::exception {
 public:
     explicit unknown_character_exception(const std::string& ch);
-    const char* what() const noexcept override;
+    [[nodiscard]] const char* what() const noexcept override;
 
 private:
     std::string character;
@@ -20,7 +20,7 @@ private:
 class invalid_regex_exception final : public std::exception {
 public:
     explicit invalid_regex_exception(const std::string& mes);
-    const char* what() const noexcept override;
+    [[nodiscard]] const char* what() const noexcept override;
 
 private:
     std::string message;

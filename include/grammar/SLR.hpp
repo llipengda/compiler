@@ -16,6 +16,7 @@
 #include <functional>
 #include <iomanip>
 #include <iostream>
+#include <ranges>
 #include <set>
 #include <stack>
 #include <unordered_map>
@@ -55,7 +56,7 @@ std::ostream& operator<<(std::ostream& os, const action& act);
 struct LR_stack_t {
 private:
     union {
-        std::size_t state;
+        std::size_t state{};
         production::symbol symbol;
     };
 
@@ -67,7 +68,7 @@ private:
 public:
     LR_stack_t();
     LR_stack_t(std::size_t s);
-    LR_stack_t(const production::symbol& sym);
+    LR_stack_t(production::symbol sym);
     LR_stack_t(const LR_stack_t& other);
     LR_stack_t(LR_stack_t&& other) noexcept;
     LR_stack_t& operator=(const LR_stack_t& other);
@@ -93,16 +94,16 @@ public:
     rightmost_step() = default;
 
     void set_input(const std::vector<lexer::token>& input);
-    void add(const production::production& prod, const std::size_t ridx);
+    void add(const production::production& prod, std::size_t ridx);
     void print() const;
-    void insert_symbol(const std::size_t ridx, const production::symbol& sym);
+    void insert_symbol(std::size_t ridx, const production::symbol& sym);
 };
 
 template <typename Production = production::LR_production>
 class SLR : public grammar_base {
 public:
     using production_t = Production;
-    static_assert(std::is_base_of<production::LR_production, production_t>::value);
+    static_assert(std::is_base_of_v<production::LR_production, production_t>);
 
     using action_table_t = std::unordered_map<std::size_t, std::unordered_map<production::symbol, action>>;
     using goto_table_t = std::unordered_map<std::size_t, std::unordered_map<production::symbol, std::size_t>>;
@@ -130,7 +131,7 @@ protected:
     virtual void init_first_item_set();
     void build_items_set();
     virtual symbol_set expand_item_set(const symbol_set& symbols, items_t& current_item_set, const symbol_set& after_dot);
-    virtual void build_acc_and_reduce(const items_t& current_items, const std::size_t idx);
+    virtual void build_acc_and_reduce(const items_t& current_items, std::size_t idx);
     virtual std::pair<bool, std::size_t> add_closure(items_t& current_items, std::size_t idx);
     virtual void move_dot(std::size_t idx, const production::symbol& sym);
     void print_items_set() const;
@@ -200,7 +201,7 @@ void SLR<Production>::parse(const std::vector<lexer::token>& input) {
     in.emplace_back(production::symbol::end_mark_str);
 
     std::stack<LR_stack_t> stack;
-    stack.push(std::size_t{0});
+    stack.emplace(std::size_t{0});
 
     std::vector<production::production> output;
     std::size_t pos = 0;
@@ -212,7 +213,7 @@ void SLR<Production>::parse(const std::vector<lexer::token>& input) {
         assert(top.is_state());
         auto row = action_table.at(top.get_state());
 
-        if (!row.count(cur_input)) {
+        if (!row.contains(cur_input)) {
             throw exception::grammar_error("Unexpected token: " + cur_input.name + " at line " + std::to_string(in[pos].line) + ", column " + std::to_string(in[pos].column));
         }
         auto act = row[cur_input];
@@ -229,8 +230,8 @@ void SLR<Production>::parse(const std::vector<lexer::token>& input) {
         std::cout << "action: " << act << '\n';
 #endif
         if (act.is_accept()) {
-            for (auto it = output.rbegin(); it != output.rend(); ++it) {
-                tree_->add_r(*it);
+            for (const auto& prod : std::ranges::reverse_view(output)) {
+                tree_->add_r(prod);
             }
             for (const auto& tk : in) {
                 tree_->update_r(production::symbol{tk});
@@ -239,8 +240,8 @@ void SLR<Production>::parse(const std::vector<lexer::token>& input) {
         }
 
         if (act.is_shift()) {
-            stack.push(cur_input);
-            stack.push(act.val);
+            stack.emplace(cur_input);
+            stack.emplace(act.val);
             pos++;
         } else if (act.is_reduce()) {
             const auto& prod = productions.at(act.val);
@@ -343,7 +344,7 @@ void SLR<Production>::build_acc_and_reduce(const items_t& current_items, const s
     for (const auto& item : current_items) {
         if (item.is_end()) {
             if (item.lhs == productions[0].lhs) {
-                assert(!action_table[idx].count(production::symbol::end_mark));
+                assert(!action_table[idx].contains(production::symbol::end_mark));
                 action_table[idx][production::symbol::end_mark] = action::accept();
             } else {
                 std::size_t pid = -1;
@@ -440,15 +441,15 @@ template <typename Production>
 void SLR<Production>::print_tables() const {
     std::cout << "Parsing Table:\n";
     std::set<production::symbol> terminals;
-    for (const auto& [state, row] : action_table) {
-        for (const auto& [sym, act] : row) {
+    for (const auto& row : action_table | std::views::values) {
+        for (const auto& sym : row | std::views::keys) {
             terminals.insert(sym);
         }
     }
 
     std::set<production::symbol> non_terminals;
-    for (const auto& [state, row] : goto_table) {
-        for (const auto& [sym, target] : row) {
+    for (const auto& row : goto_table | std::views::values) {
+        for (const auto& sym : row | std::views::keys) {
             non_terminals.insert(sym);
         }
     }
@@ -467,10 +468,10 @@ void SLR<Production>::print_tables() const {
     std::cout << "\n";
 
     std::set<std::size_t> all_states;
-    for (const auto& [state, _] : action_table) {
+    for (const auto& state : action_table | std::views::keys) {
         all_states.insert(state);
     }
-    for (const auto& [state, _] : goto_table) {
+    for (const auto& state : goto_table | std::views::keys) {
         all_states.insert(state);
     }
 

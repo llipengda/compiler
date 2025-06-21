@@ -29,7 +29,7 @@ bool is(token_type ch, T other);
 
 bool match(char c, const token_type& ch);
 
-bool is_nonop(const char ch);
+bool is_nonop(char ch);
 bool is_nonop(const token_type& ch);
 
 std::vector<token_type> split(const std::string& s);

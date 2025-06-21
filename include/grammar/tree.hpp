@@ -38,11 +38,11 @@ public:
     void update(const production::symbol& sym);
     void update_r(const production::symbol& sym);
     void print() const;
-    virtual void print_node(const std::shared_ptr<tree_node>& node, const int depth) const;
-    void visit(const std::function<void(std::shared_ptr<tree_node>)>& func);
+    virtual void print_node(const std::shared_ptr<tree_node>& node, int depth) const;
+    void visit(const std::function<void(std::shared_ptr<tree_node>)>& func) const;
 
 private:
-    void visit(std::shared_ptr<tree_node> node, const std::function<void(std::shared_ptr<tree_node>)>& func);
+    static void visit(const std::shared_ptr<tree_node>& node, const std::function<void(std::shared_ptr<tree_node>)>& func);
 };
 
 } // namespace grammar

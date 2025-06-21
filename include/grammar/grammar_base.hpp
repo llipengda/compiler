@@ -29,9 +29,9 @@ protected:
 
     void calc_first();
     symbol_set& calc_first(const production::symbol& sym);
-    symbol_set calc_first(std::vector<production::symbol> symbols);
+    symbol_set calc_first(const std::vector<production::symbol>& symbols);
     void calc_follow();
-    bool calc_follow(const std::size_t pos);
+    bool calc_follow(std::size_t pos);
     symbol_set calc_first(const production::production& prod) const;
 };
 } // namespace grammar

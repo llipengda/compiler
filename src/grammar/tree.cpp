@@ -1,10 +1,13 @@
 #include "grammar/tree.hpp"
 
+#include <ranges>
+#include <utility>
+
 namespace grammar {
 
 tree_node::tree_node(const production::symbol& sym) : symbol(std::make_shared<production::symbol>(sym)) {}
 
-tree_node::tree_node(std::shared_ptr<production::symbol> sym) : symbol(sym) {}
+tree_node::tree_node(std::shared_ptr<production::symbol> sym) : symbol(std::move(sym)) {}
 
 void tree::add(const production::production& prod) {
     if (!root) {
@@ -21,8 +24,8 @@ void tree::add(const production::production& prod) {
                 next = node;
             }
         }
-        for (auto it = tmp.rbegin(); it != tmp.rend(); ++it) {
-            to_replace.push_back(*it);
+        for (auto& it : std::ranges::reverse_view(tmp)) {
+            to_replace.push_back(it);
         }
         for (auto it = root->children.rbegin(); it != root->children.rend(); ++it) {
             if ((*it)->symbol->is_non_terminal()) {
@@ -50,8 +53,8 @@ void tree::add(const production::production& prod) {
             found = true;
         }
     }
-    for (auto it = tmp.rbegin(); it != tmp.rend(); ++it) {
-        to_replace.push_back(*it);
+    for (auto& it : std::ranges::reverse_view(tmp)) {
+        to_replace.push_back(it);
     }
 
     if (found) {
@@ -142,7 +145,7 @@ void tree::update(const production::symbol& sym) {
 
 void tree::update_r(const production::symbol& sym) {
     if (to_replace.empty()) {
-        visit([&](std::shared_ptr<tree_node> node) {
+        visit([&](const std::shared_ptr<tree_node>& node) {
             if (node->symbol && node->symbol->is_terminal() && !node->symbol->is_epsilon()) {
                 to_replace.emplace_back(node->symbol);
             }
@@ -176,11 +179,11 @@ void tree::print_node(const std::shared_ptr<tree_node>& node, const int depth) c
     }
 }
 
-void tree::visit(const std::function<void(std::shared_ptr<tree_node>)>& func) {
+void tree::visit(const std::function<void(std::shared_ptr<tree_node>)>& func) const {
     visit(root, func);
 }
 
-void tree::visit(std::shared_ptr<tree_node> node, const std::function<void(std::shared_ptr<tree_node>)>& func) {
+void tree::visit(const std::shared_ptr<tree_node>& node, const std::function<void(std::shared_ptr<tree_node>)>& func) {
     if (!node) {
         return;
     }
@@ -188,7 +191,7 @@ void tree::visit(std::shared_ptr<tree_node> node, const std::function<void(std::
     if (node->children.empty()) {
         return;
     }
-    for (auto child : node->children) {
+    for (const auto& child : node->children) {
         visit(child, func);
     }
 }

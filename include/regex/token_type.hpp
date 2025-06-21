@@ -38,13 +38,13 @@ struct char_set {
     bool is_negative;
 
     char_set();
-    explicit char_set(const char from, const char to, const bool is_negative = false);
-    explicit char_set(const std::initializer_list<char> init, bool is_negative = false);
-    explicit char_set(std::initializer_list<std::pair<char, char>> init, const bool is_negative = false);
+    explicit char_set(char from, char to, bool is_negative = false);
+    char_set(std::initializer_list<char> init, bool is_negative = false);
+    char_set(std::initializer_list<std::pair<char, char>> init, bool is_negative = false);
 
-    void add(const char ch);
+    void add(char ch);
     void add(const char_set& other);
-    void add(const char from, const char to);
+    void add(char from, char to);
 
     bool operator==(const char_set& other) const;
 };

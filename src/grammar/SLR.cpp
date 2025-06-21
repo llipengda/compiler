@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "grammar/SLR.hpp"
 
 namespace grammar {
@@ -56,7 +58,7 @@ LR_stack_t::LR_stack_t() : state(-1), type(type::state) {}
 
 LR_stack_t::LR_stack_t(std::size_t s) : state(s), type(type::state) {}
 
-LR_stack_t::LR_stack_t(const production::symbol& sym) : symbol(sym), type(type::symbol) {}
+LR_stack_t::LR_stack_t(production::symbol sym) : symbol(std::move(sym)), type(type::symbol) {}
 
 LR_stack_t::LR_stack_t(const LR_stack_t& other) : type(other.type) {
     if (type == type::state) {

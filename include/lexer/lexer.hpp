@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 
@@ -38,7 +39,7 @@ struct token {
     template <typename TokenType>
     token(const TokenType type, std::string value, const std::size_t line, const std::size_t column)
         : type(static_cast<int>(type)), value(std::move(value)), line(line), column(column) {
-        static_assert(std::is_enum<TokenType>::value || std::is_convertible<TokenType, int>::value, "token_type must be an enum type");
+        static_assert(std::is_enum_v<TokenType> || std::is_convertible_v<TokenType, int>, "token_type must be an enum type");
     }
 
     explicit token(std::string value) : type(-1), value(std::move(value)), line(0), column(0) {}
@@ -57,8 +58,8 @@ public:
         TokenType token;
         std::string name;
 
-        input_keyword(const std::string& pattern, TokenType tok, const std::string& n)
-            : pattern_str(pattern), token(tok), name(n) {}
+        input_keyword(std::string pattern, TokenType tok, std::string n)
+            : pattern_str(std::move(pattern)), token(tok), name(std::move(n)) {}
     };
 
     template <typename TokenType>
@@ -68,9 +69,9 @@ public:
     static std::unordered_map<int, std::string> token_names;
 
     template <typename TokenType>
-    lexer(const input_keywords_t<TokenType> key_words, TokenType whitespace_);
+    lexer(input_keywords_t<TokenType> key_words, TokenType whitespace_);
 
-    tokens_t parse(const std::string& input, bool skip_whitespace = true) const;
+    [[nodiscard]] tokens_t parse(const std::string& input, bool skip_whitespace = true) const;
 
 private:
     std::vector<keyword_t> key_words;
@@ -99,7 +100,7 @@ namespace lexer {
 
 template <typename TokenType>
 lexer::lexer(const input_keywords_t<TokenType> key_words, TokenType whitespace_) {
-    static_assert(std::is_enum<TokenType>::value, "token_type must be an enum type");
+    static_assert(std::is_enum_v<TokenType>, "token_type must be an enum type");
     whitespace = static_cast<int>(whitespace_);
 
     for (const auto& keyword : key_words) {

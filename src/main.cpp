@@ -63,6 +63,7 @@ const lexer::lexer::input_keywords_t<token_type> keywords = {
 const std::unordered_set<std::string> terminals{
     "int", "real", "if", "then", "else", "(", ")", ";", "{", "}", "+", "-", "*",
     "/", "<", "<=", ">", ">=", "==", "=", "ID", "INTNUM", "REALNUM"};
+
 std::vector<semantic::sema_production> build_grammar() {
     grammar::set_epsilon_str("E");
     grammar::set_end_mark_str("$");
@@ -99,13 +100,14 @@ std::vector<semantic::sema_production> build_grammar() {
              env.table.for_each_current([&](const std::string& key, const semantic::symbol_table::symbol_info& value) { stmt_1.inh[key] = value.at("value"); });
              env.table.exit_scope();),
          ACT(GETI(stmt, 1); GET(stmt); GET(boolexpr); if (boolexpr.syn["val"] == "true") {
-                for (auto& [key, value] : stmt.inh) {
+                    for (auto& [key, value] : stmt.inh) {
                     (*env.table.lookup(key))["value"] = value;
-                } } else {
-                for (auto& [key, value] : stmt_1.inh) {
+                    } } else {
+                    for (auto& [key, value] : stmt_1.inh) {
                     (*env.table.lookup(key))["value"] = value;
-                } })},
-        {"assgstmt", "ID", "=", "arithexpr", ";", ACT(GET(ID); GET(arithexpr); auto table_ID = env.table.lookup(ID.lexval); if (table_ID == nullptr) { env.error(ID.lexval + " is not defined"); return; }(*table_ID)["value"] = arithexpr.syn["val"];)},
+                    } })},
+        {"assgstmt", "ID", "=", "arithexpr", ";", ACT(GET(ID); GET(arithexpr); auto table_ID = env.table.lookup(ID.lexval); if (table_ID == nullptr) { env.
+                error(ID.lexval + " is not defined"); return; }(*table_ID)["value"] = arithexpr.syn["val"];)},
         {"boolexpr", "arithexpr", "boolop", "arithexpr", ACT(GET(boolexpr); GET(boolop); GET(arithexpr); GETI(arithexpr, 1); auto lhs = std::stod(arithexpr.syn["val"]); auto rhs = std::stod(arithexpr_1.syn["val"]); if (boolop.syn["op"] == "<") { boolexpr.syn["val"] = lhs < rhs ? "true" : "false"; } if (boolop.syn["op"] == ">") { boolexpr.syn["val"] = lhs > rhs ? "true" : "false"; } if (boolop.syn["op"] == "==") { boolexpr.syn["val"] = lhs == rhs ? "true" : "false"; } if (boolop.syn["op"] == "<=") { boolexpr.syn["val"] = lhs <= rhs ? "true" : "false"; } if (boolop.syn["op"] == ">=") { boolexpr.syn["val"] = lhs >= rhs ? "true" : "false"; })},
         {"boolop", "<", ACT(GET(boolop); boolop.syn["op"] = "<";)},
         {"boolop", ">", ACT(GET(boolop); boolop.syn["op"] = ">";)},
@@ -132,8 +134,7 @@ std::vector<semantic::sema_production> build_grammar() {
 };
 
 std::string trim_zero(std::string s) {
-    auto pos = s.find('.');
-    if (pos == std::string::npos) {
+    if (const auto pos = s.find('.'); pos == std::string::npos) {
         return s;
     }
     while (!s.empty() && s.back() == '0') {
@@ -158,26 +159,28 @@ int main() {
     const auto tokens = lex.parse(input);
     using gram_t = grammar::SLR<>;
     auto gram = semantic::sema<gram_t>(build_grammar());
-    gram.init_error_handlers([](gram_t::action_table_t& action_table, gram_t::goto_table_t& goto_table, std::vector<gram_t::error_handle_fn>& error_handlers) {
+    gram.init_error_handlers([](gram_t::action_table_t& action_table, gram_t::goto_table_t&,
+                                std::vector<gram_t::error_handle_fn>& error_handlers) {
         const auto realnum = grammar::production::symbol{"REALNUM"};
-        for (auto& [state, row] : action_table) {
-            if (!row.count(realnum)) {
+        for (auto& row : action_table | std::views::values) {
+            if (!row.contains(realnum)) {
                 row[realnum] = grammar::action::error(0);
             }
         }
 
-        error_handlers.emplace_back([](std::stack<grammar::LR_stack_t>& stack, std::vector<lexer::token>& in, std::size_t& pos) {
-            std::cout << "error message:line " << in[pos].line << ",realnum can not be translated into int type" << std::endl;
-            in[pos].type = static_cast<int>(token_type::INTNUM);
-        });
+        error_handlers.emplace_back(
+            [](std::stack<grammar::LR_stack_t>&, std::vector<lexer::token>& in, const std::size_t& pos) {
+                std::cout << "error message:line " << in[pos].line << ",realnum can not be translated into int type" << std::endl;
+                in[pos].type = static_cast<int>(token_type::INTNUM);
+            });
     });
     gram.build();
     gram.parse(tokens);
 
-    auto tree = std::static_pointer_cast<semantic::sema_tree>(gram.get_tree());
+    const auto tree = std::static_pointer_cast<semantic::sema_tree>(gram.get_tree());
 
     // tree->print();
-    auto env = tree->calc();
+    const auto env = tree->calc();
     // tree->print();
 
     for (const auto& error : env.errors) {
@@ -193,7 +196,7 @@ int main() {
         res.push_back(k + ": " + trim_zero(v.at("value")));
     });
 
-    std::sort(res.begin(), res.end());
+    std::ranges::sort(res);
     for (const auto& r : res) {
         std::cout << r << '\n';
     }

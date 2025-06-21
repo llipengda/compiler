@@ -43,7 +43,7 @@ public:
     token::token_type value;
     std::size_t number;
 
-    explicit char_node(const token::token_type& ch, const std::size_t number);
+    explicit char_node(token::token_type ch, std::size_t number);
 };
 
 class concat_node final : public regex_node {

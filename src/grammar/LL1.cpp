@@ -1,9 +1,10 @@
 #include "grammar/LL1.hpp"
 #include "grammar/exception.hpp"
 
-#include <iomanip>
-#include <stack>
 #include <algorithm>
+#include <iomanip>
+#include <ranges>
+#include <stack>
 
 namespace grammar {
 
@@ -59,11 +60,11 @@ void LL1::parse(const std::vector<lexer::token>& input) {
             }
         } else {
             const auto& table = parsing_table.at(top);
-            if (!table.count(cur_input)) {
-                if (first.at(top).count(production::symbol::epsilon)) {
+            if (!table.contains(cur_input)) {
+                if (first.at(top).contains(production::symbol::epsilon)) {
                     stack.pop();
                     tree_->add(production::production(top.name + " -> " + production::symbol::epsilon_str));
-                } else if (!follow.at(top).count(cur_input)) {
+                } else if (!follow.at(top).contains(cur_input)) {
                     pos++;
                 } else {
                     throw exception::grammar_error("Unexpected token: " + cur_input.name + ' ' + get_pos());
@@ -80,8 +81,8 @@ void LL1::parse(const std::vector<lexer::token>& input) {
                 continue;
             }
 
-            for (auto it = symbols.rbegin(); it != symbols.rend(); ++it) {
-                stack.push(*it);
+            for (const auto& symbol : std::ranges::reverse_view(symbols)) {
+                stack.push(symbol);
             }
         }
     }
@@ -138,26 +139,22 @@ void LL1::print_parsing_table() const {
 }
 
 void LL1::print_parsing_table_pretty() const {
-    auto longest_prod_len =
-        std::max_element(
-            productions.begin(),
-            productions.end(),
-            [](const auto& a, const auto& b) {
-                return a.to_string().size() < b.to_string().size();
-            })
+    const auto longest_prod_len =
+        std::ranges::max_element(productions,
+                                 [](const auto& a, const auto& b) {
+                                     return a.to_string().size() < b.to_string().size();
+                                 })
             ->to_string()
             .size();
-    auto longest_non_terminal_sym_len =
-        std::max_element(
-            follow.begin(),
-            follow.end(),
-            [](const auto& a, const auto& b) {
-                return a.first.name.size() < b.first.name.size();
-            })
+    const auto longest_non_terminal_sym_len =
+        std::ranges::max_element(follow,
+                                 [](const auto& a, const auto& b) {
+                                     return a.first.name.size() < b.first.name.size();
+                                 })
             ->first.name.size();
     symbol_set terminals;
     symbol_set non_terminals;
-    for (const auto& [sym, _] : first) {
+    for (const auto& sym : first | std::views::keys) {
         if ((sym.is_terminal() || sym.is_end_mark()) && !sym.is_epsilon()) {
             terminals.insert(sym);
         }
@@ -178,7 +175,7 @@ void LL1::print_parsing_table_pretty() const {
     for (const auto& nt : non_terminals) {
         std::cout << '|' << std::left << std::setw(longest_non_terminal_sym_len) << nt << '|';
         for (const auto& t : terminals) {
-            if (parsing_table.at(nt).count(t)) {
+            if (parsing_table.at(nt).contains(t)) {
                 const auto& prod = parsing_table.at(nt).at(t);
                 std::cout << std::left << std::setw(longest_prod_len) << prod << '|';
             } else {
@@ -195,17 +192,16 @@ void LL1::build_parsing_table() {
         auto first_set = calc_first(prod);
         for (const auto& sym : first_set) {
             if (sym.is_terminal() && !sym.is_epsilon()) {
-                if (parsing_table[prod.lhs].count(sym)) {
+                if (parsing_table[prod.lhs].contains(sym)) {
                     throw exception::ambiguous_grammar_exception({prod, parsing_table[prod.lhs][sym]});
                 }
                 parsing_table[prod.lhs][sym] = prod;
             }
         }
-        if (first_set.count(production::symbol::epsilon)) {
-            auto follow_set = follow[prod.lhs];
-            for (const auto& sym : follow_set) {
+        if (first_set.contains(production::symbol::epsilon)) {
+            for (auto follow_set = follow[prod.lhs]; const auto& sym : follow_set) {
                 if (sym.is_terminal() || sym.is_end_mark()) {
-                    if (parsing_table[prod.lhs].count(sym)) {
+                    if (parsing_table[prod.lhs].contains(sym)) {
                         throw exception::ambiguous_grammar_exception({prod, parsing_table[prod.lhs][sym]});
                     }
                     parsing_table[prod.lhs][sym] = prod;

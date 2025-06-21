@@ -1,5 +1,6 @@
 #include "semantic/sema_tree.hpp"
 #include <iostream>
+#include <utility>
 
 namespace semantic {
 
@@ -13,7 +14,7 @@ bool sema_tree_node::is_symbol() const {
 
 sema_tree_node::sema_tree_node(const symbol_t& symbol) : grammar::tree_node(std::make_shared<symbol_t>(symbol)) {}
 
-sema_tree_node::sema_tree_node(const action_t& action) : grammar::tree_node(nullptr), action(action) {}
+sema_tree_node::sema_tree_node(action_t action) : grammar::tree_node(nullptr), action(std::move(action)) {}
 
 sema_tree_node::sema_tree_node(const sema_production::rhs_value_t& value) : grammar::tree_node(nullptr) {
     if (value.is_symbol) {

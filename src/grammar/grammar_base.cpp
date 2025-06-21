@@ -1,5 +1,7 @@
 #include "grammar/grammar_base.hpp"
 
+#include <ranges>
+
 namespace grammar {
 
 void grammar_base::print_tree() const {
@@ -17,7 +19,7 @@ void grammar_base::calc_first() {
 }
 
 grammar_base::symbol_set& grammar_base::calc_first(const production::symbol& sym) {
-    if (first.count(sym)) {
+    if (first.contains(sym)) {
         return first[sym];
     }
 
@@ -26,18 +28,17 @@ grammar_base::symbol_set& grammar_base::calc_first(const production::symbol& sym
         return first[sym];
     }
 
-    auto& production_ids = symbol_map[sym];
+    const auto& production_ids = symbol_map[sym];
     auto& result = first[sym];
 
     for (const auto& id : production_ids) {
         const auto& prod = productions[id];
-        const auto& rhs = prod.rhs;
 
-        for (const auto& s : rhs) {
+        for (const auto& rhs = prod.rhs; const auto& s : rhs) {
             auto first_set = calc_first(s);
             result.insert(first_set.begin(), first_set.end());
 
-            if (!first_set.count(production::symbol::epsilon)) {
+            if (!first_set.contains(production::symbol::epsilon)) {
                 break;
             }
         }
@@ -46,12 +47,12 @@ grammar_base::symbol_set& grammar_base::calc_first(const production::symbol& sym
     return result;
 }
 
-grammar_base::symbol_set grammar_base::calc_first(std::vector<production::symbol> symbols) {
+grammar_base::symbol_set grammar_base::calc_first(const std::vector<production::symbol>& symbols) {
     symbol_set result;
     for (const auto& sym : symbols) {
         auto first_set = calc_first(sym);
         result.insert(first_set.begin(), first_set.end());
-        if (!first_set.count(production::symbol::epsilon)) {
+        if (!first_set.contains(production::symbol::epsilon)) {
             break;
         }
     }
@@ -70,7 +71,7 @@ void grammar_base::calc_follow() {
         }
     }
 
-    for (auto& [sym, follow_set] : follow) {
+    for (auto &follow_set: follow | std::views::values) {
         follow_set.erase(production::symbol::epsilon);
     }
 }
@@ -78,7 +79,7 @@ void grammar_base::calc_follow() {
 bool grammar_base::calc_follow(const std::size_t pos) {
     auto& prod = productions[pos];
     auto& rhs = prod.rhs;
-    auto& lhs = prod.lhs;
+    const auto& lhs = prod.lhs;
 
     const auto follow_copy = follow;
 
@@ -94,10 +95,8 @@ bool grammar_base::calc_follow(const std::size_t pos) {
         }
     }
 
-    auto last = rhs.rbegin();
-    if (last != rhs.rend()) {
-        auto& sym = *last;
-        if (sym.is_non_terminal()) {
+    if (const auto last = rhs.rbegin(); last != rhs.rend()) {
+        if (const auto& sym = *last; sym.is_non_terminal()) {
             follow[sym].insert(follow[lhs].begin(), follow[lhs].end());
         }
     }
@@ -112,8 +111,7 @@ bool grammar_base::calc_follow(const std::size_t pos) {
         if (!prev_sym.is_non_terminal()) {
             continue;
         }
-        auto& first_set = calc_first(sym);
-        if (first_set.count(production::symbol::epsilon)) {
+        if (auto& first_set = calc_first(sym); first_set.contains(production::symbol::epsilon)) {
             follow[prev_sym].insert(follow[lhs].begin(), follow[lhs].end());
         } else {
             break;
@@ -128,7 +126,7 @@ grammar_base::symbol_set grammar_base::calc_first(const production::production& 
     for (const auto& sym : prod.rhs) {
         auto first_set = first.at(sym);
         result.insert(first_set.begin(), first_set.end());
-        if (!first_set.count(production::symbol::epsilon)) {
+        if (!first_set.contains(production::symbol::epsilon)) {
             break;
         }
     }
