@@ -91,7 +91,7 @@ public:
     sema_production();
 
 #ifdef SEMA_PROD_USE_INITIALIZER_LIST
-    sema_production(const std::string& lhs_str, std::initializer_list<rhs_value_t> rhs_values);
+    sema_production(std::initializer_list<rhs_value_t> values);
 #else
 #if __cplusplus >= 201703L
     template <typename... Args>

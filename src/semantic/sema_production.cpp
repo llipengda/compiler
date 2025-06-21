@@ -189,8 +189,8 @@ sema_production::operator grammar::production::production() const {
 sema_production::sema_production() = default;
 
 #ifdef SEMA_PROD_USE_INITIALIZER_LIST
-sema_production::sema_production(const std::string& lhs_str, std::initializer_list<rhs_value_t> rhs_values)
-    : lhs(lhs_str), rhs(rhs_values) {}
+sema_production::sema_production(std::initializer_list<rhs_value_t> values)
+    : lhs(values.begin()->get_symbol()), rhs(values.begin() + 1, values.end()) {}
 #endif
 
 sema_production sema_production::replace(const grammar::production::symbol& sym) {

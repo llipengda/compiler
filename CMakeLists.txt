@@ -10,6 +10,11 @@ file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
 
 add_executable(compiler ${SOURCES})
 
+target_compile_definitions(compiler PUBLIC
+    # SEMA_PROD_USE_INITIALIZER_LIST # Use initializer lists when building sema_prod
+    # USE_STD_REGEX                  # Use std::regex for regex operations
+)
+
 add_custom_command(
     TARGET compiler POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
