@@ -3,6 +3,16 @@
 
 #include <gtest/gtest.h>
 
+std::vector<lexer::token> simple_lexer(const std::string& input) {
+    std::vector<lexer::token> tokens;
+    for (const auto& c : utils::split_trim(input, " ")) {
+        if (!c.empty()) {
+            tokens.emplace_back(c);
+        }
+    }
+    return tokens;
+}
+
 using grammar_types = ::testing::Types<grammar::LL1, grammar::SLR<>, grammar::LR1>;
 
 template <typename Grammar>
@@ -11,15 +21,6 @@ protected:
     Grammar parser;
     explicit grammar_test_base(const std::string& grammar) : parser(grammar) {
         parser.build();
-    }
-    static std::vector<lexer::token> simple_lexer(const std::string& input) {
-        std::vector<lexer::token> tokens;
-        for (const auto& c : utils::split_trim(input, " ")) {
-            if (!c.empty()) {
-                tokens.emplace_back(c);
-            }
-        }
-        return tokens;
     }
     void expect_parse(const std::string& input, const std::vector<std::string>& expected) {
         const auto tokens = simple_lexer(input);
@@ -187,4 +188,34 @@ TYPED_TEST(grammar_test_program, fails_missing_closing_brace) {
 
 TYPED_TEST(grammar_test_program, fails_invalid_token) {
     this->expect_parse_fail("{ ID := NUM ; }"); // := 非法
+}
+
+TEST(grammar_test, parse_ambigous_grammar) {
+    const auto g = R"(D -> T id | T id = expr
+T -> int | double | string
+)";
+
+    grammar::LR1 lr1(g);
+    lr1.build();
+    lr1.parse(simple_lexer("int id"));
+    const auto tree = lr1.get_tree();
+    std::vector<std::string> preorder;
+    tree->visit([&preorder](auto&& node) {
+        preorder.push_back(node->symbol->lexval);
+    });
+    const std::vector<std::string> expect{"D", "T", "int", "id"};
+    ASSERT_EQ(preorder, expect);
+
+    grammar::LL1 ll1(g);
+    EXPECT_ANY_THROW(ll1.build());
+
+    grammar::SLR<> slr(g);
+    slr.build();
+    slr.parse(simple_lexer("int id"));
+    const auto slr_tree = slr.get_tree();
+    std::vector<std::string> slr_preorder;
+    slr_tree->visit([&slr_preorder](auto&& node) {
+        slr_preorder.push_back(node->symbol->lexval);
+    });
+    ASSERT_EQ(slr_preorder, expect);
 }
