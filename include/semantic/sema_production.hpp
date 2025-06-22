@@ -44,12 +44,17 @@ public:
     std::vector<std::string> errors;
     std::vector<std::unordered_map<std::string, std::shared_ptr<sema_symbol>>> symbols;
     symbol_table table;
+    std::size_t label_counter{0};
+    std::size_t temp_counter{0};
 
     void error(const std::string& msg);
     sema_symbol& symbol(const std::string& name);
     void enter_symbol_scope();
     void add_symbol(const std::shared_ptr<sema_symbol>& sym);
     void exit_symbol_scope();
+    std::string label();
+    std::string temp();
+    void emit(const std::string& code);
 };
 
 class sema_production {

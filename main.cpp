@@ -11,7 +11,6 @@ enum class token_type {
     INT,
     REAL,
     IF,
-    THEN,
     ELSE,
     LPAR,
     RPAR,
@@ -38,7 +37,6 @@ const lexer::lexer::input_keywords_t<token_type> keywords = {
     {"int", token_type::INT, "int"},
     {"real", token_type::REAL, "real"},
     {"if", token_type::IF, "if"},
-    {"then", token_type::THEN, "then"},
     {"else", token_type::ELSE, "else"},
     {"\\(", token_type::LPAR, "("},
     {"\\)", token_type::RPAR, ")"},
@@ -61,7 +59,7 @@ const lexer::lexer::input_keywords_t<token_type> keywords = {
     {"[ \t\n]+", token_type::WHITESPACE, "WHITESPACE"}};
 
 const std::unordered_set<std::string> terminals{
-    "int", "real", "if", "then", "else", "(", ")", ";", "{", "}", "+", "-", "*",
+    "int", "real", "if", "else", "(", ")", ";", "{", "}", "+", "-", "*",
     "/", "<", "<=", ">", ">=", "==", "=", "ID", "INTNUM", "REALNUM"};
 
 std::vector<semantic::sema_production> build_grammar() {
@@ -87,7 +85,7 @@ std::vector<semantic::sema_production> build_grammar() {
         {"compoundstmt", "{", ACT(env.table.enter_scope();), "stmts", "}", ACT(env.table.exit_scope();)},
         {"stmts", "stmt", "stmts"},
         {"stmts", "E"},
-        {"ifstmt", "if", "(", "boolexpr", ")", "then",
+        {"ifstmt", "if", "(", "boolexpr", ")",
          ACT(env.table.enter_scope_copy();),
          "stmt",
          ACT(GET(stmt);

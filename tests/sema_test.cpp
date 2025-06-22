@@ -99,7 +99,6 @@ protected:
     }
     void expect_semantics(const std::string& input, const std::vector<std::string>& expected, const std::vector<std::string>& expected_errors = {}) {
         const auto tokens = lex.parse(input);
-        utils::print(tokens);
         auto [res, errors] = run(tokens);
         if (errors.empty()) {
             ASSERT_EQ(res, expected);

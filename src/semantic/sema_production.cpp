@@ -119,6 +119,19 @@ void sema_env::exit_symbol_scope() {
     symbols.pop_back();
 }
 
+std::string sema_env::label() {
+    return "L" + std::to_string(this->label_counter++);
+}
+
+std::string sema_env::temp() {
+    return "__t" + std::to_string(this->temp_counter++);
+}
+
+void sema_env::emit(const std::string& code) {
+    // Placeholder for actual code emission logic
+    std::cout << "code: " << code << std::endl;
+}
+
 sema_production::rhs_value_t::rhs_value_t(symbol sym) : sym(std::move(sym)), is_symbol(true), is_action(false) {}
 
 sema_production::rhs_value_t::rhs_value_t(action act) : act(std::move(act)), is_symbol(false), is_action(true) {}
