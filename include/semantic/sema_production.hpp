@@ -46,6 +46,7 @@ public:
     symbol_table table;
     std::size_t label_counter{0};
     std::size_t temp_counter{0};
+    std::ostream* os;
 
     void error(const std::string& msg);
     sema_symbol& symbol(const std::string& name);
@@ -54,7 +55,9 @@ public:
     void exit_symbol_scope();
     std::string label();
     std::string temp();
-    void emit(const std::string& code);
+    void emit(const std::string& code) const;
+
+    explicit sema_env(std::ostream* os) : os(os) {}
 };
 
 class sema_production {
@@ -108,7 +111,7 @@ public:
     sema_production replace(const grammar::production::symbol& sym) const;
 };
 
-#define ACT(...) semantic::sema_production::rhs_value_t([](semantic::sema_env& env) { __VA_ARGS__ })
+#define ACT(...) semantic::sema_production::rhs_value_t([&](semantic::sema_env& env) { __VA_ARGS__ })
 #define GET(x) auto& x = env.symbol(#x)
 #define TO_STRING(x) #x
 #define GETI(x, i) auto& x##_##i = env.symbol(TO_STRING(x<i>))

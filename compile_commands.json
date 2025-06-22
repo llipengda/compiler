@@ -1,170 +1,170 @@
 [
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\grammar\\LL1.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\LL1.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\grammar\\LL1.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\LL1.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\grammar\\LL1.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\grammar\\LL1.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\grammar\\LR1.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\LR1.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\grammar\\LR1.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\LR1.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\grammar\\LR1.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\grammar\\LR1.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\grammar\\SLR.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\SLR.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\grammar\\SLR.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\SLR.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\grammar\\SLR.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\grammar\\SLR.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\grammar\\exception.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\exception.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\grammar\\exception.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\exception.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\grammar\\exception.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\grammar\\exception.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\grammar\\grammar_base.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\grammar_base.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\grammar\\grammar_base.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\grammar_base.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\grammar\\grammar_base.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\grammar\\grammar_base.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\grammar\\production.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\production.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\grammar\\production.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\production.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\grammar\\production.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\grammar\\production.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\grammar\\tree.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\tree.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\grammar\\tree.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\grammar\\tree.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\grammar\\tree.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\grammar\\tree.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\lexer\\lexer.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\lexer\\lexer.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\lexer\\lexer.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\lexer\\lexer.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\lexer\\lexer.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\lexer\\lexer.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\regex\\dfa.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\dfa.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\regex\\dfa.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\dfa.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\regex\\dfa.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\regex\\dfa.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\regex\\exception.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\exception.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\regex\\exception.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\exception.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\regex\\exception.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\regex\\exception.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\regex\\regex.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\regex.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\regex\\regex.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\regex.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\regex\\regex.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\regex\\regex.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\regex\\token.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\token.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\regex\\token.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\token.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\regex\\token.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\regex\\token.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\regex\\token_type.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\token_type.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\regex\\token_type.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\token_type.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\regex\\token_type.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\regex\\token_type.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\regex\\tree.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\tree.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\regex\\tree.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\regex\\tree.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\regex\\tree.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\regex\\tree.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\semantic\\sema.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\semantic\\sema.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\semantic\\sema.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\semantic\\sema.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\semantic\\sema.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\semantic\\sema.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\semantic\\sema_production.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\semantic\\sema_production.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\semantic\\sema_production.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\semantic\\sema_production.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\semantic\\sema_production.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\semantic\\sema_production.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\semantic\\sema_tree.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\semantic\\sema_tree.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\semantic\\sema_tree.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\semantic\\sema_tree.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\semantic\\sema_tree.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\semantic\\sema_tree.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler_lib.dir\\src\\utils.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\utils.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_lib.dir\\src\\utils.cpp.obj -c D:\\code\\Cpp\\compiler\\src\\utils.cpp",
   "file": "D:\\code\\Cpp\\compiler\\src\\utils.cpp",
   "output": "CMakeFiles\\compiler_lib.dir\\src\\utils.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -std=gnu++20 -o CMakeFiles\\compiler.dir\\main.cpp.obj -c D:\\code\\Cpp\\compiler\\main.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler.dir\\main.cpp.obj -c D:\\code\\Cpp\\compiler\\main.cpp",
   "file": "D:\\code\\Cpp\\compiler\\main.cpp",
   "output": "CMakeFiles\\compiler.dir\\main.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googletest/include -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googletest -std=gnu++20 -o CMakeFiles\\compiler_tests.dir\\tests\\grammar_test.cpp.obj -c D:\\code\\Cpp\\compiler\\tests\\grammar_test.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest/include -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_tests.dir\\tests\\grammar_test.cpp.obj -c D:\\code\\Cpp\\compiler\\tests\\grammar_test.cpp",
   "file": "D:\\code\\Cpp\\compiler\\tests\\grammar_test.cpp",
   "output": "CMakeFiles\\compiler_tests.dir\\tests\\grammar_test.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googletest/include -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googletest -std=gnu++20 -o CMakeFiles\\compiler_tests.dir\\tests\\lexer_test.cpp.obj -c D:\\code\\Cpp\\compiler\\tests\\lexer_test.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest/include -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_tests.dir\\tests\\lexer_test.cpp.obj -c D:\\code\\Cpp\\compiler\\tests\\lexer_test.cpp",
   "file": "D:\\code\\Cpp\\compiler\\tests\\lexer_test.cpp",
   "output": "CMakeFiles\\compiler_tests.dir\\tests\\lexer_test.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googletest/include -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googletest -std=gnu++20 -o CMakeFiles\\compiler_tests.dir\\tests\\regex_test.cpp.obj -c D:\\code\\Cpp\\compiler\\tests\\regex_test.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest/include -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_tests.dir\\tests\\regex_test.cpp.obj -c D:\\code\\Cpp\\compiler\\tests\\regex_test.cpp",
   "file": "D:\\code\\Cpp\\compiler\\tests\\regex_test.cpp",
   "output": "CMakeFiles\\compiler_tests.dir\\tests\\regex_test.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googletest/include -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googletest -std=gnu++20 -o CMakeFiles\\compiler_tests.dir\\tests\\sema_test.cpp.obj -c D:\\code\\Cpp\\compiler\\tests\\sema_test.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest/include -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_tests.dir\\tests\\sema_test.cpp.obj -c D:\\code\\Cpp\\compiler\\tests\\sema_test.cpp",
   "file": "D:\\code\\Cpp\\compiler\\tests\\sema_test.cpp",
   "output": "CMakeFiles\\compiler_tests.dir\\tests\\sema_test.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googletest/include -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googletest -std=gnu++20 -o CMakeFiles\\compiler_tests.dir\\tests\\utils_test.cpp.obj -c D:\\code\\Cpp\\compiler\\tests\\utils_test.cpp",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest/include -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\compiler_tests.dir\\tests\\utils_test.cpp.obj -c D:\\code\\Cpp\\compiler\\tests\\utils_test.cpp",
   "file": "D:\\code\\Cpp\\compiler\\tests\\utils_test.cpp",
   "output": "CMakeFiles\\compiler_tests.dir\\tests\\utils_test.cpp.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/build/_deps/googletest-src/googlemock/include -ID:/code/Cpp/compiler/build/_deps/googletest-src/googlemock -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googletest/include -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googletest -std=c++20 -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=0 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o _deps\\googletest-build\\googlemock\\CMakeFiles\\gmock.dir\\src\\gmock-all.cc.obj -c D:\\code\\Cpp\\compiler\\build\\_deps\\googletest-src\\googlemock\\src\\gmock-all.cc",
-  "file": "D:\\code\\Cpp\\compiler\\build\\_deps\\googletest-src\\googlemock\\src\\gmock-all.cc",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googlemock/include -ID:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googlemock -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest/include -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest -g -std=c++20 -fdiagnostics-color=always -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=0 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o _deps\\googletest-build\\googlemock\\CMakeFiles\\gmock.dir\\src\\gmock-all.cc.obj -c D:\\code\\Cpp\\compiler\\cmake-build-debug\\_deps\\googletest-src\\googlemock\\src\\gmock-all.cc",
+  "file": "D:\\code\\Cpp\\compiler\\cmake-build-debug\\_deps\\googletest-src\\googlemock\\src\\gmock-all.cc",
   "output": "_deps\\googletest-build\\googlemock\\CMakeFiles\\gmock.dir\\src\\gmock-all.cc.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googlemock/include -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googlemock -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googletest/include -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googletest -std=c++20 -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=0 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o _deps\\googletest-build\\googlemock\\CMakeFiles\\gmock_main.dir\\src\\gmock_main.cc.obj -c D:\\code\\Cpp\\compiler\\build\\_deps\\googletest-src\\googlemock\\src\\gmock_main.cc",
-  "file": "D:\\code\\Cpp\\compiler\\build\\_deps\\googletest-src\\googlemock\\src\\gmock_main.cc",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googlemock/include -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googlemock -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest/include -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest -g -std=c++20 -fdiagnostics-color=always -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=0 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o _deps\\googletest-build\\googlemock\\CMakeFiles\\gmock_main.dir\\src\\gmock_main.cc.obj -c D:\\code\\Cpp\\compiler\\cmake-build-debug\\_deps\\googletest-src\\googlemock\\src\\gmock_main.cc",
+  "file": "D:\\code\\Cpp\\compiler\\cmake-build-debug\\_deps\\googletest-src\\googlemock\\src\\gmock_main.cc",
   "output": "_deps\\googletest-build\\googlemock\\CMakeFiles\\gmock_main.dir\\src\\gmock_main.cc.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/build/_deps/googletest-src/googletest/include -ID:/code/Cpp/compiler/build/_deps/googletest-src/googletest -std=c++20 -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=0 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o _deps\\googletest-build\\googletest\\CMakeFiles\\gtest.dir\\src\\gtest-all.cc.obj -c D:\\code\\Cpp\\compiler\\build\\_deps\\googletest-src\\googletest\\src\\gtest-all.cc",
-  "file": "D:\\code\\Cpp\\compiler\\build\\_deps\\googletest-src\\googletest\\src\\gtest-all.cc",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest/include -ID:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest -g -std=c++20 -fdiagnostics-color=always -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=0 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o _deps\\googletest-build\\googletest\\CMakeFiles\\gtest.dir\\src\\gtest-all.cc.obj -c D:\\code\\Cpp\\compiler\\cmake-build-debug\\_deps\\googletest-src\\googletest\\src\\gtest-all.cc",
+  "file": "D:\\code\\Cpp\\compiler\\cmake-build-debug\\_deps\\googletest-src\\googletest\\src\\gtest-all.cc",
   "output": "_deps\\googletest-build\\googletest\\CMakeFiles\\gtest.dir\\src\\gtest-all.cc.obj"
 },
 {
-  "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googletest/include -isystem D:/code/Cpp/compiler/build/_deps/googletest-src/googletest -std=c++20 -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=0 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o _deps\\googletest-build\\googletest\\CMakeFiles\\gtest_main.dir\\src\\gtest_main.cc.obj -c D:\\code\\Cpp\\compiler\\build\\_deps\\googletest-src\\googletest\\src\\gtest_main.cc",
-  "file": "D:\\code\\Cpp\\compiler\\build\\_deps\\googletest-src\\googletest\\src\\gtest_main.cc",
+  "directory": "D:/code/Cpp/compiler/cmake-build-debug",
+  "command": "C:\\mingw64\\bin\\c++.exe -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest/include -isystem D:/code/Cpp/compiler/cmake-build-debug/_deps/googletest-src/googletest -g -std=c++20 -fdiagnostics-color=always -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=0 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o _deps\\googletest-build\\googletest\\CMakeFiles\\gtest_main.dir\\src\\gtest_main.cc.obj -c D:\\code\\Cpp\\compiler\\cmake-build-debug\\_deps\\googletest-src\\googletest\\src\\gtest_main.cc",
+  "file": "D:\\code\\Cpp\\compiler\\cmake-build-debug\\_deps\\googletest-src\\googletest\\src\\gtest_main.cc",
   "output": "_deps\\googletest-build\\googletest\\CMakeFiles\\gtest_main.dir\\src\\gtest_main.cc.obj"
 }
 ]

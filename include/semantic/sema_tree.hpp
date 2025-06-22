@@ -27,19 +27,20 @@ struct sema_tree_node final : grammar::tree_node {
 class sema_tree final : public grammar::tree {
     using production = grammar::production::production;
 
-std::unordered_map<production, sema_production> prod_map;
+    std::unordered_map<production, sema_production> prod_map;
+    std::ostream* os;
 
 public:
-    explicit sema_tree(const std::vector<sema_production>& productions);
+    explicit sema_tree(const std::vector<sema_production>& productions, std::ostream& oss = std::cout);
 
     void add(const production& prod) override;
     void add_r(const production& prod) override;
     void print_node(const std::shared_ptr<grammar::tree_node>& node, int depth) const override;
 
-    sema_env calc();
+    sema_env calc() const;
 
 private:
-    void calc_node(std::shared_ptr<grammar::tree_node> node, sema_env& env);
+    static void calc_node(const std::shared_ptr<grammar::tree_node>& node, sema_env& env);
 };
 } // namespace semantic
 

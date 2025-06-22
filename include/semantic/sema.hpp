@@ -17,15 +17,15 @@ template <typename T>
 class sema : public T {
 public:
     static_assert(std::is_base_of<grammar::grammar_base, T>::value, "T must be a subclass of grammar::grammar_base");
-    explicit sema(const std::vector<sema_production>& productions);
+    explicit sema(const std::vector<sema_production>& productions, std::ostream& oss = std::cout);
 };
 } // namespace semantic
 
 #pragma region tpp
 
 template <typename T>
-semantic::sema<T>::sema(const std::vector<sema_production>& productions) : T(to_productions(productions)) {
-    this->tree_ = std::make_shared<sema_tree>(productions);
+semantic::sema<T>::sema(const std::vector<sema_production>& productions, std::ostream& oss) : T(to_productions(productions)) {
+    this->tree_ = std::make_shared<sema_tree>(productions, oss);
 }
 
 #pragma endregion

@@ -1,5 +1,6 @@
 #include "semantic/sema_tree.hpp"
 #include <iostream>
+#include <ranges>
 #include <utility>
 
 namespace semantic {
@@ -24,7 +25,7 @@ sema_tree_node::sema_tree_node(const sema_production::rhs_value_t& value) : gram
     }
 }
 
-sema_tree::sema_tree(const std::vector<sema_production>& productions) {
+sema_tree::sema_tree(const std::vector<sema_production>& productions, std::ostream& oss) : os(&oss) {
     for (const auto& prod : productions) {
         prod_map[production(prod)] = prod;
     }
@@ -46,12 +47,11 @@ void sema_tree::add(const production& prod) {
                 next = node;
             }
         }
-        for (auto it = tmp.rbegin(); it != tmp.rend(); ++it) {
-            to_replace.push_back(*it);
+        for (auto& it : std::ranges::reverse_view(tmp)) {
+            to_replace.push_back(it);
         }
         for (auto it = root->children.rbegin(); it != root->children.rend(); ++it) {
-            const auto& sym = (*it)->symbol;
-            if (sym && sym->is_non_terminal()) {
+            if (const auto& sym = (*it)->symbol; sym && sym->is_non_terminal()) {
                 next_r = *it;
                 break;
             }
@@ -76,8 +76,8 @@ void sema_tree::add(const production& prod) {
             found = true;
         }
     }
-    for (auto it = tmp.rbegin(); it != tmp.rend(); ++it) {
-        to_replace.push_back(*it);
+    for (auto& it : std::ranges::reverse_view(tmp)) {
+        to_replace.push_back(it);
     }
     if (found) {
         next = new_next;
@@ -108,9 +108,8 @@ void sema_tree::add_r(const production& prod) {
             node->parent = root;
             root->children.push_back(node);
         }
-        for (auto it = root->children.rbegin(); it != root->children.rend(); ++it) {
-            auto snode = std::static_pointer_cast<sema_tree_node>(*it);
-            if (snode->is_symbol() && snode->symbol->is_non_terminal()) {
+        for (auto& it : std::ranges::reverse_view(root->children)) {
+            if (const auto snode = std::static_pointer_cast<sema_tree_node>(it); snode->is_symbol() && snode->symbol->is_non_terminal()) {
                 next_r = snode;
                 break;
             }
@@ -130,9 +129,8 @@ void sema_tree::add_r(const production& prod) {
 
     bool found = false;
 
-    for (auto it = next_r->children.rbegin(); it != next_r->children.rend(); ++it) {
-        auto snode = std::static_pointer_cast<sema_tree_node>(*it);
-        if (snode->is_symbol() && snode->symbol->is_non_terminal()) {
+    for (auto& it : std::ranges::reverse_view(next_r->children)) {
+        if (const auto snode = std::static_pointer_cast<sema_tree_node>(it); snode->is_symbol() && snode->symbol->is_non_terminal()) {
             next_r = snode;
             found = true;
             break;
@@ -142,9 +140,8 @@ void sema_tree::add_r(const production& prod) {
     if (!found) {
         next_r = next_r->parent;
         while (next_r) {
-            for (auto it = next_r->children.rbegin(); it != next_r->children.rend(); ++it) {
-                auto snode = std::static_pointer_cast<sema_tree_node>(*it);
-                if (snode->is_symbol()
+            for (auto& it : std::ranges::reverse_view(next_r->children)) {
+                if (const auto snode = std::static_pointer_cast<sema_tree_node>(it); snode->is_symbol()
                     && snode->symbol->is_non_terminal()
                     && snode->children.empty()) {
                     next_r = snode;
@@ -161,12 +158,12 @@ void sema_tree::add_r(const production& prod) {
 }
 
 void sema_tree::print_node(const std::shared_ptr<grammar::tree_node>& node, const int depth) const {
-    auto snode = std::static_pointer_cast<sema_tree_node>(node);
+    const auto snode = std::static_pointer_cast<sema_tree_node>(node);
     for (int i = 0; i < depth; ++i) {
         std::cout << "  ";
     }
     if (snode->is_symbol()) {
-        auto ssym = std::static_pointer_cast<sema_symbol>(snode->symbol);
+        const auto ssym = std::static_pointer_cast<sema_symbol>(snode->symbol);
         std::cout << *ssym << '\n';
     } else {
         std::cout << "[action]\n";
@@ -176,14 +173,20 @@ void sema_tree::print_node(const std::shared_ptr<grammar::tree_node>& node, cons
     }
 }
 
-sema_env sema_tree::calc() {
-    sema_env env;
+sema_env sema_tree::calc() const {
+#ifdef DEBUG
+    this->print();
+#endif
+    sema_env env(os);
     calc_node(root, env);
+#ifdef DEBUG
+    this->print();
+#endif
     return env;
 }
 
-void sema_tree::calc_node(std::shared_ptr<grammar::tree_node> node, sema_env& env) {
-    auto snode = std::static_pointer_cast<sema_tree_node>(node);
+void sema_tree::calc_node(const std::shared_ptr<grammar::tree_node>& node, sema_env& env) {
+    const auto snode = std::static_pointer_cast<sema_tree_node>(node);
 
     if (snode->is_action()) {
         snode->action(env);
@@ -194,13 +197,12 @@ void sema_tree::calc_node(std::shared_ptr<grammar::tree_node> node, sema_env& en
     }
     env.enter_symbol_scope();
     env.add_symbol(std::static_pointer_cast<sema_symbol>(snode->symbol));
-    for (auto child : node->children) {
-        auto schild = std::static_pointer_cast<sema_tree_node>(child);
-        if (schild->is_symbol()) {
+    for (const auto& child : node->children) {
+        if (const auto schild = std::static_pointer_cast<sema_tree_node>(child); schild->is_symbol()) {
             env.add_symbol(std::static_pointer_cast<sema_symbol>(schild->symbol));
         }
     }
-    for (auto child : node->children) {
+    for (const auto& child : node->children) {
         calc_node(child, env);
     }
     env.exit_symbol_scope();
