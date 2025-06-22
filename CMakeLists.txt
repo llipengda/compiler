@@ -10,6 +10,8 @@ option(CODE_COVERAGE "Enable coverage reporting" OFF)
 option(SEMA_PROD_USE_INITIALIZER_LIST "Use initializer list for sema production" OFF)
 option(USE_STD_REGEX "Use std::regex for lexer" OFF)
 option(DEBUG "Enable debug mode" OFF)
+option(SR_CONFLICT_USE_SHIFT, "Use shift for shift-reduce conflicts" OFF)
+option(SR_CONFLICT_USE_REDUCE, "Use reduce for shift-reduce conflicts" OFF)
 
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     message(STATUS "Code coverage enabled")
@@ -44,6 +46,8 @@ target_compile_definitions(compiler PUBLIC
     $<$<BOOL:${SEMA_PROD_USE_INITIALIZER_LIST}>:SEMA_PROD_USE_INITIALIZER_LIST>
     $<$<BOOL:${USE_STD_REGEX}>:USE_STD_REGEX>
     $<$<BOOL:${DEBUG}>:DEBUG>
+    $<$<BOOL:${SR_CONFLICT_USE_SHIFT}>:SR_CONFLICT_USE_SHIFT>
+    $<$<BOOL:${SR_CONFLICT_USE_REDUCE}>:SR_CONFLICT_USE_REDUCE>
 )
 
 # ---- simple_cc ----
@@ -52,6 +56,9 @@ add_executable(simple_cc ${SIMPLE_CC_SOURCES})
 target_include_directories(simple_cc PRIVATE
         ${CMAKE_SOURCE_DIR}/simple_cc/include
         $<TARGET_PROPERTY:compiler,INTERFACE_INCLUDE_DIRECTORIES>
+)
+target_compile_definitions(simple_cc PUBLIC
+    SR_CONFLICT_USE_SHIFT
 )
 target_link_libraries(simple_cc PRIVATE compiler)
 

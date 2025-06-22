@@ -148,6 +148,8 @@ cmake --build .
 - `SEMA_PROD_USE_INITIALIZER_LIST=ON`: 使用初始化列表
 - `USE_STD_REGEX=ON`: 使用标准库正则表达式
 - `DEBUG=ON`: 启用调试模式
+- `SR_CONFLICT_USE_SHIFT=ON`: 出现移入-规约冲突时总是使用移入
+- `SR_CONFLICT_USE_REDUCE=ON`: 出现移入-规约冲突时总是使用规约
 
 示例：
 

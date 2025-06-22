@@ -356,7 +356,15 @@ void SLR<Production>::build_acc_and_reduce(const items_t& current_items, const s
                 }
                 assert(pid != -1);
                 for (const auto& s : follow[item.lhs]) {
-                    assert(!action_table[idx].count(s));
+                    if (action_table[idx].contains(s)) {
+#if !defined(SR_CONFLICT_USE_SHIFT) && !defined(SR_CONFLICT_USE_REDUCE)
+                        throw exception::ambiguous_grammar_exception(productions);
+#endif
+#ifdef SR_CONFLICT_USE_REDUCE
+                        action_table[idx][s] = action::reduce(pid);
+#endif
+                        continue;
+                    }
                     action_table[idx][s] = action::reduce(pid);
                 }
             }
@@ -413,6 +421,15 @@ void SLR<Production>::move_dot(std::size_t idx, const production::symbol& sym) {
             if (sym.is_non_terminal()) {
                 goto_table[idx][sym] = to;
             } else if (sym.is_terminal() || sym.is_end_mark()) {
+                if (action_table[idx].contains(sym)) {
+#if !defined(SR_CONFLICT_USE_SHIFT) && !defined(SR_CONFLICT_USE_REDUCE)
+                    throw exception::ambiguous_grammar_exception(productions);
+#endif
+#ifdef SR_CONFLICT_USE_SHIFT
+                    action_table[idx][sym] = action::shift(to);
+#endif
+                    return;
+                }
                 action_table[idx][sym] = action::shift(to);
             }
         }

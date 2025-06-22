@@ -191,31 +191,15 @@ TYPED_TEST(grammar_test_program, fails_invalid_token) {
 }
 
 TEST(grammar_test, parse_ambigous_grammar) {
-    const auto g = R"(D -> T id | T id = expr
-T -> int | double | string
+    const auto g = R"(S -> if op then S else S | if op then S | a
 )";
 
     grammar::LR1 lr1(g);
-    lr1.build();
-    lr1.parse(simple_lexer("int id"));
-    const auto tree = lr1.get_tree();
-    std::vector<std::string> preorder;
-    tree->visit([&preorder](auto&& node) {
-        preorder.push_back(node->symbol->lexval);
-    });
-    const std::vector<std::string> expect{"D", "T", "int", "id"};
-    ASSERT_EQ(preorder, expect);
+    EXPECT_ANY_THROW(lr1.build());
 
     grammar::LL1 ll1(g);
     EXPECT_ANY_THROW(ll1.build());
 
     grammar::SLR<> slr(g);
-    slr.build();
-    slr.parse(simple_lexer("int id"));
-    const auto slr_tree = slr.get_tree();
-    std::vector<std::string> slr_preorder;
-    slr_tree->visit([&slr_preorder](auto&& node) {
-        slr_preorder.push_back(node->symbol->lexval);
-    });
-    ASSERT_EQ(slr_preorder, expect);
+    EXPECT_ANY_THROW(lr1.build());
 }

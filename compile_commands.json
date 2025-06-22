@@ -109,25 +109,25 @@
 },
 {
   "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -ID:/code/Cpp/compiler/simple_cc/include -std=gnu++20 -o CMakeFiles\\simple_cc.dir\\simple_cc\\build_grammar.cpp.obj -c D:\\code\\Cpp\\compiler\\simple_cc\\build_grammar.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DSR_CONFLICT_USE_SHIFT -ID:/code/Cpp/compiler/include -ID:/code/Cpp/compiler/simple_cc/include -std=gnu++20 -o CMakeFiles\\simple_cc.dir\\simple_cc\\build_grammar.cpp.obj -c D:\\code\\Cpp\\compiler\\simple_cc\\build_grammar.cpp",
   "file": "D:\\code\\Cpp\\compiler\\simple_cc\\build_grammar.cpp",
   "output": "CMakeFiles\\simple_cc.dir\\simple_cc\\build_grammar.cpp.obj"
 },
 {
   "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -ID:/code/Cpp/compiler/simple_cc/include -std=gnu++20 -o CMakeFiles\\simple_cc.dir\\simple_cc\\build_lexer.cpp.obj -c D:\\code\\Cpp\\compiler\\simple_cc\\build_lexer.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DSR_CONFLICT_USE_SHIFT -ID:/code/Cpp/compiler/include -ID:/code/Cpp/compiler/simple_cc/include -std=gnu++20 -o CMakeFiles\\simple_cc.dir\\simple_cc\\build_lexer.cpp.obj -c D:\\code\\Cpp\\compiler\\simple_cc\\build_lexer.cpp",
   "file": "D:\\code\\Cpp\\compiler\\simple_cc\\build_lexer.cpp",
   "output": "CMakeFiles\\simple_cc.dir\\simple_cc\\build_lexer.cpp.obj"
 },
 {
   "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -ID:/code/Cpp/compiler/simple_cc/include -std=gnu++20 -o CMakeFiles\\simple_cc.dir\\simple_cc\\helper.cpp.obj -c D:\\code\\Cpp\\compiler\\simple_cc\\helper.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DSR_CONFLICT_USE_SHIFT -ID:/code/Cpp/compiler/include -ID:/code/Cpp/compiler/simple_cc/include -std=gnu++20 -o CMakeFiles\\simple_cc.dir\\simple_cc\\helper.cpp.obj -c D:\\code\\Cpp\\compiler\\simple_cc\\helper.cpp",
   "file": "D:\\code\\Cpp\\compiler\\simple_cc\\helper.cpp",
   "output": "CMakeFiles\\simple_cc.dir\\simple_cc\\helper.cpp.obj"
 },
 {
   "directory": "D:/code/Cpp/compiler/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -ID:/code/Cpp/compiler/include -ID:/code/Cpp/compiler/simple_cc/include -std=gnu++20 -o CMakeFiles\\simple_cc.dir\\simple_cc\\main.cpp.obj -c D:\\code\\Cpp\\compiler\\simple_cc\\main.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DSR_CONFLICT_USE_SHIFT -ID:/code/Cpp/compiler/include -ID:/code/Cpp/compiler/simple_cc/include -std=gnu++20 -o CMakeFiles\\simple_cc.dir\\simple_cc\\main.cpp.obj -c D:\\code\\Cpp\\compiler\\simple_cc\\main.cpp",
   "file": "D:\\code\\Cpp\\compiler\\simple_cc\\main.cpp",
   "output": "CMakeFiles\\simple_cc.dir\\simple_cc\\main.cpp.obj"
 },
