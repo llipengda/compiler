@@ -35,20 +35,25 @@ FetchContent_MakeAvailable(googletest)
 # ---- Include path ----
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-# ---- 静态库 compiler_lib ----
+# ---- 静态库 compiler ----
 file(GLOB_RECURSE LIB_SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
-add_library(compiler_lib STATIC ${LIB_SOURCES})
-target_include_directories(compiler_lib PUBLIC ${CMAKE_SOURCE_DIR}/include)
+add_library(compiler STATIC ${LIB_SOURCES})
+target_include_directories(compiler PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
-target_compile_definitions(compiler_lib PUBLIC
+target_compile_definitions(compiler PUBLIC
     $<$<BOOL:${SEMA_PROD_USE_INITIALIZER_LIST}>:SEMA_PROD_USE_INITIALIZER_LIST>
     $<$<BOOL:${USE_STD_REGEX}>:USE_STD_REGEX>
     $<$<BOOL:${DEBUG}>:DEBUG>
 )
 
-# ---- 主程序 compiler ----
-add_executable(compiler ${CMAKE_SOURCE_DIR}/main.cpp) # 如无 main.cpp，跳过
-target_link_libraries(compiler PRIVATE compiler_lib)
+# ---- simple_cc ----
+file(GLOB_RECURSE SIMPLE_CC_SOURCES ${CMAKE_SOURCE_DIR}/simple_cc/*.cpp)
+add_executable(simple_cc ${SIMPLE_CC_SOURCES})
+target_include_directories(simple_cc PRIVATE
+        ${CMAKE_SOURCE_DIR}/simple_cc/include
+        $<TARGET_PROPERTY:compiler,INTERFACE_INCLUDE_DIRECTORIES>
+)
+target_link_libraries(simple_cc PRIVATE compiler)
 
 add_custom_command(
         TARGET compiler POST_BUILD
@@ -62,7 +67,7 @@ enable_testing()
 file(GLOB_RECURSE TEST_SOURCES ${CMAKE_SOURCE_DIR}/tests/*.cpp)
 
 add_executable(compiler_tests ${TEST_SOURCES})
-target_link_libraries(compiler_tests PRIVATE gtest_main compiler_lib)
+target_link_libraries(compiler_tests PRIVATE gtest_main compiler)
 target_include_directories(compiler_tests PRIVATE
         ${CMAKE_SOURCE_DIR}/include
         $<TARGET_PROPERTY:gtest,INTERFACE_INCLUDE_DIRECTORIES>
