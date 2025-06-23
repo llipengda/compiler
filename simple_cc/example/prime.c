@@ -19,7 +19,7 @@ int main() {
             printf("%d ", i);
             count = count + 1;
             sum = sum + i;
-        } else {}
+        }
     }
 
     printf("\nTotal prime count: %d\n", count);
