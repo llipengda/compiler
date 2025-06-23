@@ -12,6 +12,7 @@ int main(const int argc, const char* argv[]) {
         std::cerr << "Usage: " << argv[0] << " <file>"
                   << " [-o <output_file>]"
                   << " [-O <optimization_level>]"
+                  << " [--keep](keep intermediate files)"
                   << " [-- <args_passed_to_clang>]" << std::endl;
         return 1;
     }
@@ -21,6 +22,7 @@ int main(const int argc, const char* argv[]) {
     std::string output_arg;
     std::string optimize_arg;
     std::string args_passed_to_clang;
+    bool keep = false;
 
     if (const auto output_it = std::ranges::find(args, "-o");
         output_it != args.end() && std::next(output_it) != args.end()) {
@@ -46,8 +48,13 @@ int main(const int argc, const char* argv[]) {
         args_passed_to_clang = utils::join(std::vector(std::next(clang_it), args.end()), " ");
     }
 
-    std::ofstream il("tmp.il");
+    if (std::ranges::find(args, "--keep") != args.end()) {
+        keep = true;
+    }
 
+    std::string il_name = std::string{"./"} + input_file + ".ll";
+    std::string opt_name = std::string{"./"} + input_file + ".opt.ll";
+    std::ofstream il(il_name);
     std::ifstream ifs(input_file);
 
     std::string input;
@@ -57,6 +64,8 @@ int main(const int argc, const char* argv[]) {
         input += '\n';
     }
 
+    ifs.close();
+
     auto tokens = lex(input);
     auto prods = build_grammar();
     auto parser = semantic::sema<grammar::LR1>(prods, il);
@@ -65,6 +74,8 @@ int main(const int argc, const char* argv[]) {
 
     auto tree = std::static_pointer_cast<semantic::sema_tree>(parser.get_tree());
     auto env = tree->calc();
+
+    il.close();
 
     for (const auto& err : env.errors) {
         std::cerr << err << std::endl;
@@ -76,23 +87,24 @@ int main(const int argc, const char* argv[]) {
     }
 
     // call opt to optimize
-    std::string opt_cmd = std::string{"opt -S "} + optimize_arg + " -o tmp.opt.ll tmp.il";
+    std::string opt_cmd = std::string{"opt -S "} + optimize_arg + " -o " + opt_name + " " + il_name;
     if (system(opt_cmd.c_str()) != 0) {
         std::cerr << "opt failed." << std::endl;
         return 1;
     }
 
     // call clang to generate executable
-    std::string clang_cmd = std::string{"clang "} + optimize_arg + " " + output_arg + " tmp.opt.ll " + args_passed_to_clang;
+    std::string clang_cmd = std::string{"clang "} + optimize_arg + " " + output_arg + " " + opt_name + " " + args_passed_to_clang;
 
     if (system(clang_cmd.c_str()) != 0) {
         std::cerr << "clang failed." << std::endl;
         return 1;
     }
 
-    // del tmp files
-    std::remove("tmp.il");
-    std::remove("tmp.opt.ll");
+    if (!keep) {
+        std::remove(il_name.c_str());
+        std::remove(opt_name.c_str());
+    }
 
     return 0;
 }

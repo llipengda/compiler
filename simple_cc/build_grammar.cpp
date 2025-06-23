@@ -1,8 +1,8 @@
 #include "build_grammar.hpp"
-#include "grammar/grammar.hpp"
 #include "semantic/sema_production.hpp"
 #include "build_lexer.hpp"
 #include "helper.hpp"
+#include <sstream>
 
 std::vector<semantic::sema_production> build_grammar() {
     grammar::set_epsilon_str("E");
@@ -159,7 +159,7 @@ std::vector<semantic::sema_production> build_grammar() {
         },
 
         // 不带else的if语句
-        {"ifstmt", "if", "(", "expr", ")", "stmt",
+        {"ifstmt", "if", "(", "expr", ")",
          ACT(
              GET(expr);
              GET(stmt);
@@ -173,6 +173,7 @@ std::vector<semantic::sema_production> build_grammar() {
              env.emit("  br i1 " + cond + ", label %" + then_label + ", label %" + end_label);
              env.emit(then_label + ":");
          ),
+         "stmt",
          ACT(
              GET(stmt);
              std::string end_label = stmt.inh["end"];
